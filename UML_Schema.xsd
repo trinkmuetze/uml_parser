@@ -33,43 +33,51 @@
 		</xs:restriction>
 	</xs:simpleType>
 <!------------------------------------------------------------------------------------------------------>
-<!-- CLASS -->
-	<xs:element name="class">
-		<xs:complexType>
+<!-- PACKAGE -->
+	<xs:element name="package">
+		<xs:simpleType>
 			<xs:sequence>
 				<xs:attribute name="name" type="xs:string" use="required" />
-				<xs:attribute name="type" type="xs:classType" />
-
-				<xs:element name="attribute" type="xs:string">
+				<!-- CLASS -->
+				<xs:element name="class">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:attribute name="name" type="xs:string" use="required" />
-							<xs:attribute name="visibility" type="xs:visibility" />
-							<xs:attribute name="data-type" type="xs:string" use="required" />
-							<xs:attribute name="default-value" type="xs:string" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-
-				<xs:element name="method" type="xs:string">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:attribute name="name" type="xs:string" use="required" />
-							<xs:attribute name="visibility" type="xs:visibility" />
-							<xs:attribute name="return-type" type="xs:string" use="required" />
-							<xs:element name="parameter" type="xs:string">
-								<xs:simpleType>
-									<xs:attribute name="name" type="xs:string" use="required" />
-									<xs:attribute name="data-type" type="xs:string" use="required" />
-								</xs:simpleType>
+							<xs:attribute name="type" type="xs:classType" />
+							<!-- ATTRIBUTE -->
+							<xs:element name="attribute" type="xs:string">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="visibility" type="xs:visibility" />
+										<xs:attribute name="data-type" type="xs:string" use="required" />
+										<xs:attribute name="default-value" type="xs:string" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- METHOD -->
+							<xs:element name="method" type="xs:string">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:attribute name="name" type="xs:string" use="required" />
+										<xs:attribute name="visibility" type="xs:visibility" />
+										<xs:attribute name="return-type" type="xs:string" use="required" />
+										<xs:element name="parameter" type="xs:string">
+											<xs:simpleType>
+												<xs:attribute name="name" type="xs:string" use="required" />
+												<xs:attribute name="data-type" type="xs:string" use="required" />
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+</xs:element>
 
 <!-- RELATIONSHIP -->
 	<xs:element name="relationship">
@@ -79,18 +87,3 @@
 			<xs:attribute name="toClass" type="xs:string" use="required" />
 		</xs:simpleType>
 	</xs:element>
-
-<!-- PACKAGE -->
-	<xs:element name="package">
-		<xs:simpleType>
-			<xs:sequence>
-				<xs:attribute name="name" type="xs:string" use="required" />
-				<xs:element name="packageClass" type="xs:string">
-					<xs:simpleType>
-						<xs:element name="class" type="xs:string" minOccurs="1"/>
-					</xs:simpleType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-</xs:element>

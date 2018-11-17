@@ -1,4 +1,10 @@
 #[derive(Clone, Debug)]
+pub struct Package {
+    pub name: String,
+    pub classes: Vec<Class>,
+}
+
+#[derive(Clone, Debug)]
 pub struct Class {
     pub name: String,
     pub attributes: Vec<Attribute>,

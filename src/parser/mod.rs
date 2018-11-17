@@ -1,7 +1,7 @@
 extern crate xmltree;
 
 mod uml_class;
-pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship};
+pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship, Package};
 
 use std::process::Command;
 use self::xmltree::Element;
@@ -47,16 +47,15 @@ pub fn parse_data(file_name: String) -> Element {
     return Element::parse(data.as_bytes()).unwrap();
 }
 
-pub fn get_classes(main: Element) -> Vec<Class>{
-    //Vektor für alle Klassen
-    let mut classes: Vec<Class> = Vec::new();
+pub fn get_packages(main: Element) -> Vec<Package>{
+    //Vektor für alle Packages
+    let mut packages: Vec<Package> = Vec::new();
 
-    //Klassen durchlaufen
+    //Packages durchlaufen
     for mut child in main.children {
-        if child.name.to_string() == "class" {
+        if child.name.to_string() == "package" {
             let mut n = "";
-            let mut a: Vec<Attribute>;
-            let mut m: Vec<Method>;
+            let mut c: Vec<Class>;
 
             //Attribute des Elements durchlaufen
             for (key, value) in &child.attributes {
@@ -65,9 +64,37 @@ pub fn get_classes(main: Element) -> Vec<Class>{
                 }
             }
 
+            //Vektor von Klassen holen
+            c = get_classes(child.children.clone());
+
+            //Klassen zum Vektor hinzufügen
+            packages.push(Package{ name: n.to_string(), classes: c});
+        }
+    }
+    return packages;
+}
+
+pub fn get_classes(elements:Vec<Element>) -> Vec<Class>{
+    //Vektor für alle Klassen
+    let mut classes: Vec<Class> = Vec::new();
+
+    //Klassen durchlaufen
+    for element in elements {
+        let mut n = "";
+        let mut a: Vec<Attribute>;
+        let mut m: Vec<Method>;
+
+        //Attribute des Elements durchlaufen
+        if element.name.to_string() == "class" {
+            //Attribute des Elements durchlaufen
+            for (key, value) in &element.attributes {
+                if key.to_string() == "name" {
+                    n = value;
+                }
+            }
             //Vektoren von Attributen und Methoden holen
-            a = get_attributes(child.children.clone());
-            m = get_methodes(child.children.clone());
+            a = get_attributes(element.children.clone());
+            m = get_methodes(element.children.clone());
 
             //Klassen zum Vektor hinzufügen
             classes.push(Class{ name: n.to_string(), attributes: a, methods: m});
@@ -166,9 +193,10 @@ fn get_parameters(elements: Vec<Element>) -> Vec<Parameter> {
     return parameters;
 }
 
-pub fn get_relationships(main: Element, classes: Vec<Class>) -> Vec<Relationship> {
+pub fn get_relationships(main: Element) -> Vec<Relationship> {
     //Vektor für alle Beziehungen
     let mut relationships: Vec<Relationship> = Vec::new();
+    let classes = get_all_classes(get_packages(main.clone()));
 
     //Beziehungen durchlaufen
     for mut child in main.children {
@@ -216,4 +244,17 @@ fn class_exists(classes: Vec<Class>, class_name: String) -> bool {
         }
     }
     return false;
+}
+
+fn get_all_classes(packages: Vec<Package>) -> Vec<Class> {
+    //Vektor für alle Klassen
+    let mut classes: Vec<Class> = Vec::new();
+
+    for package in packages {
+        for class in package.classes {
+            classes.push(class);
+        }
+    }
+
+    return classes;
 }

@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <UML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="UML_Schema.xsd">
-	<class name="Animal">
-	  <attribute name="legs" visibility="private" data-type="integer" />
-	  <attribute name="eyes" visibility="private" data-type="integer" />
-	  <attribute name="weight" visibility="private" data-type="double" />
-	  <method name="eat" visibility="public" return-type="void">
-	    <parameter name="prey" data-type="Prey" />
-	  </method>
-	  <method name="sleep" visibility="public" return-type="void">
-	    <parameter name="hour" data-type="Integer" />
-	  </method>
-	  <method name="sound" visibility="public" return-type="void" />
-	</class>
+	<package name="creatures">
+		<class name="Animal">
+  	  <attribute name="legs" visibility="private" data-type="integer" />
+  	  <attribute name="eyes" visibility="private" data-type="integer" />
+  	  <attribute name="weight" visibility="private" data-type="double" />
+  	  <method name="eat" visibility="public" return-type="void">
+  	    <parameter name="prey" data-type="Prey" />
+  	  </method>
+  	  <method name="sleep" visibility="public" return-type="void">
+  	    <parameter name="hour" data-type="Integer" />
+  	  </method>
+  	  <method name="sound" visibility="public" return-type="void" />
+  	</class>
 
-	<class name="Bird">
-	  <method name="fly" visibility="public" return-type="void">
-	    <parameter name="pos" data-type="Position"/>
-			<parameter name="speed" data-type="Integer"/>
-	  </method>
-	</class>
+  	<class name="Bird">
+  	  <method name="fly" visibility="public" return-type="void">
+  	    <parameter name="pos" data-type="Position"/>
+  			<parameter name="speed" data-type="Integer"/>
+  	  </method>
+  	</class>
+	</package>
 
 	<relationship type="inheritance" class="Bird" toClass="Animal"/>
-
-	<package name="creatures">
-	  <packageClass name="Animal"/>
-	  <packageClass name="Bird"/>
-	</package>
 </UML>
