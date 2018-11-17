@@ -5,4 +5,4 @@ version = "0.0.1"
 authors = [ "Michelle Vorwerk <michelle.vorwerk@fh-bielefeld.de>" ]
 
 [dependencies]
-xml-rs = "0.8.0"
+xmltree = "0.8.0"
