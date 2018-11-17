@@ -12,12 +12,11 @@
 			<xs:enumeration value="derived"/>
 			<xs:enumeration value="static"/>
 		</xs:restriction>
-	</xs:simpleType
+	</xs:simpleType>
 
 	<xs:simpleType name="relation">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="association"/>
-			<xs:enumeration value="multiplicity"/>
 			<xs:enumeration value="directed Association"/>
 			<xs:enumeration value="reflexive association"/>
 			<xs:enumeration value="aggregation"/>

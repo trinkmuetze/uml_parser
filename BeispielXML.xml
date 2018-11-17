@@ -16,6 +16,7 @@
 	<class name="Bird">
 	  <method name="fly" visibility="public" return-type="void">
 	    <parameter name="pos" data-type="Position"/>
+			<parameter name="speed" data-type="Integer"/>
 	  </method>
 	</class>
 
