@@ -35,6 +35,12 @@ pub struct Parameter {
 #[derive(Clone, Debug)]
 pub struct Relationship {
     pub relation_type: String,
-    pub class: String,
-    pub to_class: String,
+    pub class: RelationshipClass,
+    pub to_class: RelationshipClass,
+}
+
+#[derive(Clone, Debug)]
+pub struct RelationshipClass {
+    pub name: String,
+    pub multiplicity: String,
 }
