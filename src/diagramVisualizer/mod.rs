@@ -1,6 +1,5 @@
 extern crate imageproc;
 extern crate rusttype;
-pub mod parser;
 
 use std::env;
 use std::path::Path;
