@@ -1,7 +1,7 @@
 extern crate xmltree;
 
 mod uml_class;
-pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship, Package};
+pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship, Package, RelationshipClass};
 
 use std::process::Command;
 use self::xmltree::Element;
@@ -202,36 +202,52 @@ pub fn get_relationships(main: Element) -> Vec<Relationship> {
     for mut child in main.children {
         if child.name.to_string() == "relationship" {
             let mut t = "";
-            let mut c1 = "";
-            let mut c2 = "";
 
             //Attribute des Elements durchlaufen
             for (key, value) in &child.attributes {
                 if key.to_string() == "type" {
                     t = value;
                 }
-                else if key.to_string() == "class" {
-                    if class_exists(classes.clone(), value.to_string()) == true {
-                        c1 = value;
-                    }
-                    else {
-                        println!("Class {} doesn't exist!", value.to_string());
-                        return relationships;
-                    }
-                }
-                else if key.to_string() == "toClass" {
-                    if class_exists(classes.clone(), value.to_string()) == true {
-                        c2 = value;
-                    }
-                    else {
-                        println!("Class {} doesn't exist!", value.to_string());
-                        return relationships;
-                    }
-                }
             }
 
+            let mut c1;
+            let mut c2;
+            let mut n1 = "".to_string();
+            let mut n2 = "".to_string();
+            let mut m1 = "".to_string();
+            let mut m2 = "".to_string();
+            //Klassen der Beziehung durchlaufen
+            for class in child.children {
+                for (key, value) in class.attributes {
+                    if key.to_string() == "name" {
+                        if class_exists(classes.clone(), value.to_string()) == true {
+                            if class.name == "class" {
+                                n1 = value;
+                            }
+                            else if class.name == "toClass" {
+                                n2 = value;
+                            }
+                        } else {
+                            println!("Class {} doesn't exist!", value);
+                            return relationships;
+                        }
+                    }
+                    else if key.to_string() == "multiplicity" {
+                        if class.name == "class" {
+                            m1 = value;
+                        }
+                        else if class.name == "toClass" {
+                            m2 = value;
+                        }
+                    }
+                }
+
+            }
+            c1 = RelationshipClass{ name: n1.to_string(), multiplicity: m1.to_string() };
+            c2 = RelationshipClass{ name: n2.to_string(), multiplicity: m2.to_string() };
+
             //Beziehungen zum Vektor hinzufügen
-            relationships.push(Relationship{ relation_type: t.to_string(), class: c1.to_string(), to_class: c2.to_string()});
+            relationships.push(Relationship{ relation_type: t.to_string(), class: c1, to_class: c2});
         }
     }
     return relationships;

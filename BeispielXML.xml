@@ -22,5 +22,8 @@
   	</class>
 	</package>
 
-	<relationship type="inheritance" class="Bird" toClass="Animal"/>
+	<relationship type="inheritance">
+		<class name="Animal" multiplicity="1"/>
+		<toClass name="Bird"/>
+	</relationship>
 </UML>

@@ -10,21 +10,19 @@
 			<xs:enumeration value="package"/>
 			<xs:enumeration value="protected"/>
 			<xs:enumeration value="derived"/>
-			<xs:enumeration value="static"/>
 		</xs:restriction>
 	</xs:simpleType>
 
 	<xs:simpleType name="relation">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="association"/>
-			<xs:enumeration value="directed Association"/>
-			<xs:enumeration value="reflexive association"/>
 			<xs:enumeration value="aggregation"/>
 			<xs:enumeration value="composition"/>
-			<xs:enumeration value="realization"/>
 			<xs:enumeration value="inheritance"/>
+			<xs:enumeration value="implementation"/>
+			<xs:enumeration value="dependency"/>
 		</xs:restriction>
-	</xs:simpleType
+	</xs:simpleType>
 
 	<xs:simpleType name="classType">
 		<xs:restriction base="xs:string">
@@ -32,6 +30,19 @@
 			<xs:enumeration value="abstract"/>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:simpleType name="multiplicity">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value"0"/>
+			<xs:enumeration value"0..1"/>
+			<xs:enumeration value"1"/>
+			<xs:enumeration value"1..1"/>
+			<xs:enumeration value"0..*"/>
+			<xs:enumeration value"*"/>
+			<xs:enumeration value"1..*"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 <!------------------------------------------------------------------------------------------------------>
 <!-- PACKAGE -->
 	<xs:element name="package">
@@ -80,10 +91,24 @@
 </xs:element>
 
 <!-- RELATIONSHIP -->
-	<xs:element name="relationship">
+<xs:element name="relationship">
 		<xs:simpleType>
 			<xs:attribute name="type" type="xs:relation" use="required" />
-			<xs:attribute name="class" type="xs:string" use="required" />
-			<xs:attribute name="toClass" type="xs:string" use="required" />
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="class" type="xs:string" use="required">
+						<xs:simpleType>
+							<xs:attribute name="name" type="xs:string" use="required" />
+							<xs:attribute name="multiplicity" type="xs:multiplicity" />
+						</xs:simpleType>
+					</xs:element>
+					<xs:element name="toClass" type="xs:string" use="required">
+						<xs:simpleType>
+							<xs:attribute name="name" type="xs:string" use="required" />
+							<xs:attribute name="multiplicity" type="xs:multiplicity" />
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:complexType>
 		</xs:simpleType>
 	</xs:element>
