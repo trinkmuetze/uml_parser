@@ -6,3 +6,10 @@ authors = [ "Michelle Vorwerk <michelle.vorwerk@fh-bielefeld.de>" ]
 
 [dependencies]
 xmltree = "0.8.0"
+conv = "0.3.1"
+image = "0.20.0"
+itertools = "0.7.0"
+num = "0.2.0"
+rand = "0.4.0"
+rusttype = "0.5"
+imageproc = "*"
