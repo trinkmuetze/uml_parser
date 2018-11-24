@@ -9,7 +9,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::BufReader;
 
-pub fn validate_xml() -> bool {
+pub fn validate_xml(file_name: String) -> bool {
     let output = if cfg!(target_os = "windows") {
         //TODO: Windows implementation
         Command::new("cmd")
@@ -19,7 +19,7 @@ pub fn validate_xml() -> bool {
     } else {
         Command::new("sh")
                 .arg("-c")
-                .arg("xmllint BeispielXML.xml")
+                .arg("xmllint ".to_string() + &file_name)
                 .output()
                 .expect("failed to execute process")
     };

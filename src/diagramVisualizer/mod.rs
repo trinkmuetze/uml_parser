@@ -1,12 +1,12 @@
 extern crate imageproc;
 extern crate rusttype;
+extern crate image;
 
-use std::env;
 use std::path::Path;
-use rusttype::{FontCollection, Scale};
-use image::{Rgb, RgbImage,GenericImage};
-use imageproc::rect::Rect;
-use imageproc::drawing::{
+use self::rusttype::{FontCollection, Scale};
+use self::image::{Rgb, RgbImage};
+use self::imageproc::rect::Rect;
+use self::imageproc::drawing::{
     draw_cross_mut,
     draw_line_segment_mut,
     draw_hollow_rect_mut,
@@ -17,28 +17,9 @@ use imageproc::drawing::{
 };
 use std::clone::Clone;
 
-#[derive(Clone)]
-struct Class {
-    name: String,
-    attributes: Vec<String>,
-    methods: Vec<String>,
-}
+use super::parser;
 
-impl Class {
-    fn new(&mut self, name: String){
-        self.name = name;
-        self.attributes = Vec::new();
-        self.methods = Vec::new();
-    }
-    fn appendAttribute(&mut self, attribute: String) {
-        self.attributes.push(attribute);
-    }
-    fn appendMethod(&mut self, method: String) {
-        self.methods.push(method);
-    }
-}
-
-pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, diagramName: &str)
+pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, diagramName: &str) -> bool
 {
     //Path of the diagram
     let path = Path::new("diagram.png");
@@ -82,25 +63,37 @@ pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, dia
         maxCharacters = class.name.len();
     }
     draw_text_mut(&mut image, black, x as u32 + 5, y as u32 + 2, scale, &font, &class.name);
+    //-----------------------------------Attributes------------------------------------------------
     for attribute in class.attributes
     {
-        if(maxCharacters < attribute.len())
+        let attribute_line = attribute.visibility + " " + &attribute.name + " : " + &attribute.data_type;
+        if(maxCharacters < attribute_line.len())
         {
-            maxCharacters = attribute.len();
+            maxCharacters = attribute_line.len();
         }
         textPosition_Y = y as u32 + 10 + (counter as u32 * size as u32);
-        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &attribute);
+
+        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &attribute_line);
         counter = counter +1;
     }
     counter = counter +1;
     for method in class.methods
     {
-        if maxCharacters < method.len()
+        let mut parameters = String::new();
+
+        for parameter in method.parameters {
+            let parameter_line = parameter.name + " : " + &parameter.data_type;
+            //TODO: Parameter werden nicht richtig an einen String angehängt
+            parameters.push_str(&parameter_line);
+            println!("{}",parameters );
+        }
+        let method_line = method.visibility + " " + &method.name + "(" + &parameters + ")";
+        if maxCharacters < method.name.len()
         {
-            maxCharacters = method.len();
+            maxCharacters = method.name.len();
         }
         textPosition_Y = y as u32 + 10 + (counter as u32 * size as u32);
-        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &method);
+        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &method.name);
         counter = counter +1;
     }
     //Generate the box
@@ -122,4 +115,5 @@ pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, dia
     //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(boxWidth, boxHeight), black);
     }
     image.save(path).unwrap();
+    return true;
 }

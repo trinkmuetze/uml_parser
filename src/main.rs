@@ -1,7 +1,23 @@
 pub mod diagramVisualizer;
+pub mod parser;
 
 fn main() {
-    //Example class
+    let valid = parser::validate_xml("BeispielXML.xml".to_string());
+
+    if valid {
+        let data = parser::parse_data("BeispielXML.xml".to_string());
+        let packages = parser::get_packages(data.clone());
+
+        for package in packages {
+            if diagramVisualizer::generateDiagram(package.classes, 720, 1280, "Test") {
+                println!("Diagramm erfolgreich erstellt!");
+            }
+        }
+    } else {
+        println!("XML not valid");
+    }
+
+    /*//Example class
     let mut attribute1 = String::from("- size");
     let mut attribute2 = String::from("+ name");
     let mut method1 = String::from("+ bark()");
@@ -35,5 +51,5 @@ fn main() {
     classes.push(class);
     classes.push(class2);
 
-    generateDiagram(classes,720,1280, "My First Diagram!");
+    generateDiagram(classes,720,1280, "My First Diagram!");*/
 }

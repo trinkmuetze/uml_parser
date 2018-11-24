@@ -5,11 +5,10 @@
 	<!-- TYPES -->
 	<xs:simpleType name="visibility">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="public"/>
-			<xs:enumeration value="private"/>
-			<xs:enumeration value="package"/>
-			<xs:enumeration value="protected"/>
-			<xs:enumeration value="derived"/>
+			<xs:enumeration value="+"/>
+			<xs:enumeration value="-"/>
+			<xs:enumeration value="~"/>
+			<xs:enumeration value="/"/>
 		</xs:restriction>
 	</xs:simpleType>
 
