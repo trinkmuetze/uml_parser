@@ -1,8 +1,8 @@
 [package]
 
-name = "test"
+name = "UML_parser"
 version = "0.0.1"
-authors = [ "Michelle Vorwerk <michelle.vorwerk@fh-bielefeld.de>" ]
+authors = [ "Michelle Vorwerk <michelle.vorwerk@fh-bielefeld.de>", "Christiane Zolkin <christiane.zolkin@fh-bielefeld.de" ]
 
 [dependencies]
 xmltree = "0.8.0"
