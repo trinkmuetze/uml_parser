@@ -66,7 +66,7 @@ pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, dia
     //-----------------------------------Attributes------------------------------------------------
     for attribute in class.attributes
     {
-        let attribute_line = attribute.visibility + " " + &attribute.name + " : " + &attribute.data_type;
+        let attribute_line = attribute.visibility + &attribute.name + " : " + &attribute.data_type;
         if(maxCharacters < attribute_line.len())
         {
             maxCharacters = attribute_line.len();
@@ -79,21 +79,20 @@ pub fn generateDiagram(classes: Vec<parser::Class>, height: u32, width: u32, dia
     counter = counter +1;
     for method in class.methods
     {
-        let mut parameters = String::new();
-
+        let mut parameters : String = "".to_string();
         for parameter in method.parameters {
-            let parameter_line = parameter.name + " : " + &parameter.data_type;
-            //TODO: Parameter werden nicht richtig an einen String angehängt
+            let parameter_line : String = parameter.name + " : " + &parameter.data_type + ", ";
             parameters.push_str(&parameter_line);
-            println!("{}",parameters );
         }
-        let method_line = method.visibility + " " + &method.name + "(" + &parameters + ")";
+        parameters.pop();
+        parameters.pop();
+        let method_line = method.visibility + &method.name + "(" + &parameters + ")";
         if maxCharacters < method.name.len()
         {
             maxCharacters = method.name.len();
         }
         textPosition_Y = y as u32 + 10 + (counter as u32 * size as u32);
-        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &method.name);
+        draw_text_mut(&mut image, black, x as u32 + 5, textPosition_Y, scale, &font, &method_line);
         counter = counter +1;
     }
     //Generate the box
