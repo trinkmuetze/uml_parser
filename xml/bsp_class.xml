@@ -14,16 +14,56 @@
   	  <method name="sound" visibility="+" return-type="void" />
   	</class>
 
-  	<class name="Bird">
-  	  <method name="fly" visibility="+" return-type="void">
-  	    <parameter name="pos" data-type="Position"/>
-  			<parameter name="speed" data-type="Integer"/>
-  	  </method>
-  	</class>
+		<class name="Bird">
+			<method name="fly" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
+		<class name="Prey">
+			<attribute name="legs" visibility="-" data-type="integer" />
+			<attribute name="eyes" visibility="-" data-type="integer" />
+			<attribute name="weight" visibility="-" data-type="double" />
+			<method name="sleep" visibility="+" return-type="void">
+				<parameter name="hour" data-type="Integer" />
+			</method>
+			<method name="sound" visibility="+" return-type="void" />
+		</class>
+
+		<class name="Jaguar">
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
+		<class name="Cat">
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
 	</package>
 
 	<relationship type="inheritance">
-		<class name="Animal" multiplicity="1"/>
-		<toClass name="Bird"/>
+		<class name="Bird" multiplicity="1"/>
+		<toClass name="Animal"/>
+	</relationship>
+
+	<relationship type="inheritance">
+		<class name="Cat" multiplicity="1"/>
+		<toClass name="Animal"/>
+	</relationship>
+
+	<relationship type="inheritance">
+		<class name="Jaguar" multiplicity="1"/>
+		<toClass name="Cat"/>
+	</relationship>
+
+	<relationship type="association">
+		<class name="Cat" multiplicity="1"/>
+		<toClass name="Prey"/>
 	</relationship>
 </UML>
