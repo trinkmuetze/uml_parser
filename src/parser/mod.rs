@@ -22,7 +22,6 @@ pub fn validate_xml(uml_type: String, file_name: String) -> bool {
            .arg("xmllint --schema ".to_string() + xsd_file + " " + &file_name);
     let output = command.output().expect("failed to execute process");
     let xml_output = String::from_utf8_lossy(&output.stdout);
-    println!("{:?}", xml_output);
 
     if xml_output != "" {
         return true;
