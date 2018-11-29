@@ -63,7 +63,6 @@ impl ClassBox{
     }
     fn increaseAssociations(&mut self){
         self.associations = self.associations + 1;
-        println!("{}", self.associations);
     }
 }
 
@@ -77,7 +76,6 @@ enum Direction{
 fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>)
 {
     let num = rand::thread_rng().gen_range(0, 100);
-    println!("{}", num);
     let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
     let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
 
