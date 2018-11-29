@@ -14,13 +14,6 @@
   	  <method name="sound" visibility="+" return-type="void" />
   	</class>
 
-		<class name="Bird">
-			<method name="fly" visibility="+" return-type="void">
-				<parameter name="pos" data-type="Position"/>
-				<parameter name="speed" data-type="Integer"/>
-			</method>
-		</class>
-
 		<class name="Prey">
 			<attribute name="legs" visibility="-" data-type="integer" />
 			<attribute name="eyes" visibility="-" data-type="integer" />
@@ -38,6 +31,13 @@
 			</method>
 		</class>
 
+		<class name="Bird">
+			<method name="fly" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
 		<class name="Cat">
 			<method name="run" visibility="+" return-type="void">
 				<parameter name="pos" data-type="Position"/>
@@ -49,7 +49,7 @@
 
 	<relationship type="inheritance">
 		<class name="Bird" multiplicity="1"/>
-		<toClass name="Animal"/>
+		<toClass name="Animal" multiplicity = "3"/>
 	</relationship>
 
 	<relationship type="inheritance">
@@ -62,7 +62,7 @@
 		<toClass name="Cat"/>
 	</relationship>
 
-	<relationship type="association">
+	<relationship type="composition">
 		<class name="Cat" multiplicity="1"/>
 		<toClass name="Prey"/>
 	</relationship>

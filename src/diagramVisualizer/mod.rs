@@ -75,6 +75,12 @@ enum Direction{
 
 fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>)
 {
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+
+    let mut size = 10.0;
+    let mut scale = Scale { x: size, y: size };
+
     let num = rand::thread_rng().gen_range(0, 100);
     let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
     let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
@@ -90,26 +96,33 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
                                 toBox.start.y + toBox.box_height);
 
     if(fromBox.start.y == toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2,
+        from = Point::new(fromBox.start.x + fromBox.box_width/2,
                                     fromBox.start.y + fromBox.box_height);
         to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y + toBox.box_height);
 
         if(fromBox.box_height > toBox.box_height){
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y + 5, scale, &font, &association.class.multiplicity.to_string());
+
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 20.0),
                                     (to.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_class.multiplicity.to_string());
+
         }
         else{
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y + 5, scale, &font, &association.class.multiplicity.to_string());
+
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (from.x as f32, to.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (to.x as f32, to.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_class.multiplicity.to_string());
         }
 
         if(association.relation_type == "association") {}
@@ -124,17 +137,20 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
                                     fromBox.start.y + fromBox.box_height);
         to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y);
+        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y + 5, scale, &font, &association.class.multiplicity.to_string());
+
         draw_line_segment_mut(image, (from.x as f32, from.y as f32),
-                                (from.x as f32, from.y as f32 + 150.0), Rgb([0u8, 0u8, 0u8]));
-        draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 150.0),
-                                (to.x as f32, from.y as f32 + 150.0), Rgb([0u8, 0u8, 0u8]));
-        draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 150.0),
+                                (from.x as f32, from.y as f32 + num as f32), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (from.x as f32, from.y as f32 + num as f32),
+                                (to.x as f32, from.y as f32 + num as f32), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (to.x as f32, from.y as f32 + num as f32),
                                 (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_class.multiplicity.to_string());
+
         if(association.relation_type == "association") {}
         else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::down);}
         else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::down)}
         else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::down);}
-        else if (association.relation_type == "implementation") {}
         else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
     }
     else if (fromBox.start.y > toBox.start.y){
@@ -142,17 +158,20 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
                                     fromBox.start.y);
         to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y + toBox.box_height);
+        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y - 10, scale, &font, &association.class.multiplicity.to_string());
+        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 20, scale, &font, &association.to_class.multiplicity.to_string());
+
         draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                 (from.x as f32, from.y as f32 - num as f32), Rgb([0u8, 0u8, 0u8]));
         draw_line_segment_mut(image, (from.x as f32, from.y as f32 - num as f32),
                                 (to.x as f32, from.y as f32 - num as f32), Rgb([0u8, 0u8, 0u8]));
         draw_line_segment_mut(image, (to.x as f32, from.y as f32 - num as f32),
                                 (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+
         if(association.relation_type == "association") {}
         else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
         else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
         else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "implementation") {}
         else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
     }
 }
@@ -160,6 +179,8 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
 fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>){
     let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
     let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+
+    let num = rand::thread_rng().gen_range(0, 100);
 
     for classBox in classBoxes{
         if classBox.name == association.class.name{ fromBox = classBox.clone(); }
@@ -172,9 +193,9 @@ fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationshi
                                 toBox.start.y + toBox.box_height);
 
     if(fromBox.start.y == toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2,
+        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
                                     fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2,
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y + toBox.box_height);
 
         if(fromBox.box_height > toBox.box_height){
@@ -196,20 +217,28 @@ fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationshi
         draw_inheritanceArrow(image, to.clone(), Direction::up);
     }
     else if (fromBox.start.y < toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2,
+        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
                                     fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2,
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y);
         draw_dashed_line(image, Point::new(from.x, from.y),
+                                Point::new(from.x, from.y + num));
+        draw_dashed_line(image, Point::new(from.x, from.y + num),
+                                Point::new(to.x, from.y + num));
+        draw_dashed_line(image, Point::new(to.x, from.y + num),
                                 Point::new(to.x, to.y));
         draw_inheritanceArrow(image, to.clone(), Direction::down);
     }
     else if (fromBox.start.y > toBox.start.y){
-        from = Point::new(fromBox.start.x + fromBox.box_width/2,
+        from = Point::new(fromBox.start.x + fromBox.box_width/2 + num,
                                     fromBox.start.y);
-        to = Point::new(toBox.start.x + toBox.box_width/2,
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
                                     toBox.start.y + toBox.box_height);
         draw_dashed_line(image, Point::new(from.x, from.y),
+                                Point::new(from.x, from.y - num));
+        draw_dashed_line(image, Point::new(from.x, from.y - num),
+                                Point::new(to.x, from.y - num));
+        draw_dashed_line(image, Point::new(to.x, from.y - num),
                                 Point::new(to.x, to.y));
         draw_inheritanceArrow(image, to.clone(), Direction::up);
 
@@ -312,33 +341,6 @@ fn draw_aggregation_arrow(image: &mut RgbImage, point: Point, direction: Directi
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32 - 10.0, point.y as f32 + 15.0),
-                                    (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
-                            },
-        Direction::down =>{
-            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
-                                    (point.x as f32 + 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
-            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
-                                    (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
-            draw_line_segment_mut(image, (point.x as f32 + 10.0, point.y as f32 - 15.0),
-                                    (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
-                                },
-        Direction::to_left =>{
-
-        },
-        Direction::to_right =>{
-
-        },
-    }
-}
-
-fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Direction){
-    match direction{
-        Direction::up =>{
-            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
-                                    (point.x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
-            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
-                                    (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
-            draw_line_segment_mut(image, (point.x as f32 - 10.0, point.y as f32 + 15.0),
                                     (point.x as f32, point.y as f32 + 30.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32 + 10.0, point.y as f32 + 15.0),
                                     (point.x as f32, point.y as f32 + 30.0), Rgb([0u8, 0u8, 0u8]));
@@ -352,6 +354,46 @@ fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Directi
                                     (point.x as f32, point.y as f32 - 30.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32 - 10.0, point.y as f32 - 15.0),
                                     (point.x as f32, point.y as f32 - 30.0), Rgb([0u8, 0u8, 0u8]));
+                                },
+        Direction::to_left =>{
+
+        },
+        Direction::to_right =>{
+
+        },
+    }
+}
+
+fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Direction){
+    match direction{
+        Direction::up =>{
+            let mut point_x = point.x + 10;
+            while point_x > point.x{
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point_x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point_x as f32, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point_x as f32 - 10.0, point.y as f32 + 15.0),
+                                    (point.x as f32, point.y as f32 + 30.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point_x as f32, point.y as f32 + 15.0),
+                                    (point.x as f32, point.y as f32 + 30.0), Rgb([0u8, 0u8, 0u8]));
+            point_x = point_x - 1;
+                                }
+                            },
+        Direction::down =>{
+            let mut point_x = point.x + 10;
+            while point_x > point.x{
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point_x as f32, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point_x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point_x as f32, point.y as f32 - 15.0),
+                                    (point.x as f32, point.y as f32 - 30.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point_x as f32 - 10.0, point.y as f32 - 15.0),
+                                    (point.x as f32, point.y as f32 - 30.0), Rgb([0u8, 0u8, 0u8]));
+
+            point_x = point_x -1;
+                                }
                                 },
         Direction::to_left =>{
 
