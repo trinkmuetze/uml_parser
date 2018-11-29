@@ -9,25 +9,25 @@ use std::fs::File;
 use std::io::Read;
 use std::io::BufReader;
 
-pub fn validate_xml(file_name: String) -> bool {
-    let output = if cfg!(target_os = "windows") {
-        //TODO: Windows implementation
-        Command::new("cmd")
-                .args(&["/C", "echo hello"])
-                .output()
-                .expect("failed to execute process")
-    } else {
-        Command::new("sh")
-                .arg("-c")
-                .arg("xmllint ".to_string() + &file_name)
-                .output()
-                .expect("failed to execute process")
-    };
+pub fn validate_xml(uml_type: String, file_name: String) -> bool {
+    let mut xsd_file = "";
+    if uml_type == "class" {
+        xsd_file = "xsd/UML_Class_Schema.xsd";
+    } else if uml_type == "package" {
+        xsd_file = "xsd/UML_Package_Schema.xsd";
+    }
+
+    let mut command = Command::new("sh");
+    command.arg("-c")
+           .arg("xmllint --schema ".to_string() + xsd_file + " " + &file_name);
+    let output = command.output().expect("failed to execute process");
     let xml_output = String::from_utf8_lossy(&output.stdout);
+    println!("{:?}", xml_output);
 
     if xml_output != "" {
         return true;
     } else {
+        println!("{}", xml_output );
         return false;
     }
 }

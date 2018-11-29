@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<UML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="UML_Schema.xsd">
+<UML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Class_Schema.xsd">
 	<package name="creatures">
 		<class name="Animal">
   	  <attribute name="legs" visibility="-" data-type="integer" />

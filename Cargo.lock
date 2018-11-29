@@ -1,4 +1,18 @@
 [[package]]
+name = "UML_parser"
+version = "0.0.1"
+dependencies = [
+ "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "image 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "imageproc 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.7.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rusttype 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xmltree 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "adler32"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -514,20 +528,6 @@ dependencies = [
  "libc 0.2.44 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_termios 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "test"
-version = "0.0.1"
-dependencies = [
- "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "imageproc 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "itertools 0.7.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rand 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "rusttype 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "xmltree 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

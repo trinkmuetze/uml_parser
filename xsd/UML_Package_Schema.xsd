@@ -1,7 +1,43 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-<xs:element name="UML">
+  <!-- TYPES -->
+  <xs:simpleType name="relation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="import"/>
+      <xs:enumeration value="access"/>
+      <xs:enumeration value="merge"/>
+    </xs:restriction>
+  </xs:simpleType>
 
-  
-</xs:element>
+  <xs:element name="UML">
+    <xs:complexType>
+			<xs:sequence>
+        <xs:element name="model">
+      		<xs:complexType>
+      			<xs:sequence>
+              <!-- PACKAGE -->
+              <xs:element name="package" minOccurs="0" maxOccurs="10">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="package" minOccurs="0" maxOccurs="10">
+                      <xs:complexType>
+                          <xs:attribute name="name" type="xs:string" use="required" />
+                          <xs:attribute name="relation" type="relation" />
+                          <xs:attribute name="toPackage" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="relation" type="relation" />
+                  <xs:attribute name="toPackage" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
