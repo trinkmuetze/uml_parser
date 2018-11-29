@@ -57,7 +57,7 @@
 		<toClass name="Animal"/>
 	</relationship>
 
-	<relationship type="inheritance">
+	<relationship type="implementation">
 		<class name="Jaguar" multiplicity="1"/>
 		<toClass name="Cat"/>
 	</relationship>

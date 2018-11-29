@@ -1,7 +1,9 @@
 extern crate imageproc;
 extern crate rusttype;
 extern crate image;
+extern crate rand;
 
+use self::rand::Rng;
 use std::path::Path;
 use self::rusttype::{FontCollection, Scale};
 use self::image::{Rgb, RgbImage};
@@ -42,6 +44,7 @@ struct ClassBox{
     box_height: u32,
     row: u32,
     column: u32,
+    associations: u32,
 }
 
 impl ClassBox{
@@ -55,7 +58,12 @@ impl ClassBox{
             box_height: box_height,
             row: row,
             column: column,
+            associations: 0,
         }
+    }
+    fn increaseAssociations(&mut self){
+        self.associations = self.associations + 1;
+        println!("{}", self.associations);
     }
 }
 
@@ -66,7 +74,92 @@ enum Direction{
     to_left,
 }
 
-fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>){
+fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>)
+{
+    let num = rand::thread_rng().gen_range(0, 100);
+    println!("{}", num);
+    let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+    let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+
+    for classBox in classBoxes{
+        if classBox.name == association.class.name{ fromBox = classBox.clone(); }
+        if classBox.name == association.to_class.name{ toBox = classBox.clone(); }
+    }
+
+    let mut from = Point::new(fromBox.start.x +fromBox.box_width/2,
+                                fromBox.start.y);
+    let mut to = Point::new(toBox.start.x + toBox.box_width/2,
+                                toBox.start.y + toBox.box_height);
+
+    if(fromBox.start.y == toBox.start.y){
+        from = Point::new(fromBox.start.x +fromBox.box_width/2,
+                                    fromBox.start.y + fromBox.box_height);
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
+                                    toBox.start.y + toBox.box_height);
+
+        if(fromBox.box_height > toBox.box_height){
+            draw_line_segment_mut(image, (from.x as f32, from.y as f32),
+                                    (from.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 20.0),
+                                    (to.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 20.0),
+                                    (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+        }
+        else{
+            draw_line_segment_mut(image, (from.x as f32, from.y as f32),
+                                    (from.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (from.x as f32, to.y as f32 + 20.0),
+                                    (to.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (to.x as f32, to.y as f32 + 20.0),
+                                    (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+        }
+
+        if(association.relation_type == "association") {}
+        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
+        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
+        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
+        else if (association.relation_type == "implementation") {}
+        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+    }
+    else if (fromBox.start.y < toBox.start.y){
+        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
+                                    fromBox.start.y + fromBox.box_height);
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
+                                    toBox.start.y);
+        draw_line_segment_mut(image, (from.x as f32, from.y as f32),
+                                (from.x as f32, from.y as f32 + 150.0), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 150.0),
+                                (to.x as f32, from.y as f32 + 150.0), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 150.0),
+                                (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+        if(association.relation_type == "association") {}
+        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::down);}
+        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::down)}
+        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::down);}
+        else if (association.relation_type == "implementation") {}
+        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+    }
+    else if (fromBox.start.y > toBox.start.y){
+        from = Point::new(fromBox.start.x + fromBox.box_width/2 + num,
+                                    fromBox.start.y);
+        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
+                                    toBox.start.y + toBox.box_height);
+        draw_line_segment_mut(image, (from.x as f32, from.y as f32),
+                                (from.x as f32, from.y as f32 - num as f32), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (from.x as f32, from.y as f32 - num as f32),
+                                (to.x as f32, from.y as f32 - num as f32), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (to.x as f32, from.y as f32 - num as f32),
+                                (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
+        if(association.relation_type == "association") {}
+        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
+        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
+        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
+        else if (association.relation_type == "implementation") {}
+        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+    }
+}
+
+fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>){
     let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
     let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
 
@@ -86,56 +179,49 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
         to = Point::new(toBox.start.x + toBox.box_width/2,
                                     toBox.start.y + toBox.box_height);
 
-        draw_line_segment_mut(image, (from.x as f32, from.y as f32),
-                                (from.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
-        draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 10.0),
-                                (to.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
-        draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 20.0),
-                                (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
-
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "implementation") {}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+        if(fromBox.box_height > toBox.box_height){
+            draw_dashed_line(image, Point::new(from.x, from.y),
+                                    Point::new(from.x, from.y + 20));
+            draw_dashed_line(image, Point::new(from.x, from.y + 20),
+                                    Point::new(to.x, from.y + 20));
+            draw_dashed_line(image, Point::new(to.x, from.y + 20),
+                                    Point::new(to.x, to.y));
+        }
+        else{
+            draw_dashed_line(image, Point::new(from.x, from.y),
+                                    Point::new(from.x, to.y + 20));
+            draw_dashed_line(image, Point::new(from.x, to.y + 20),
+                                    Point::new(to.x, to.y + 20));
+            draw_dashed_line(image, Point::new(to.x, to.y + 20),
+                                    Point::new(to.x, to.y));
+        }
+        draw_inheritanceArrow(image, to.clone(), Direction::up);
     }
     else if (fromBox.start.y < toBox.start.y){
         from = Point::new(fromBox.start.x +fromBox.box_width/2,
                                     fromBox.start.y + fromBox.box_height);
         to = Point::new(toBox.start.x + toBox.box_width/2,
                                     toBox.start.y);
-        draw_line_segment_mut(image, (from.x as f32, from.y as f32),
-                                (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::down);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::down)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::down);}
-        else if (association.relation_type == "implementation") {}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+        draw_dashed_line(image, Point::new(from.x, from.y),
+                                Point::new(to.x, to.y));
+        draw_inheritanceArrow(image, to.clone(), Direction::down);
     }
     else if (fromBox.start.y > toBox.start.y){
-        from = Point::new(toBox.start.x + toBox.box_width/2,
+        from = Point::new(fromBox.start.x + fromBox.box_width/2,
                                     fromBox.start.y);
         to = Point::new(toBox.start.x + toBox.box_width/2,
                                     toBox.start.y + toBox.box_height);
-        draw_line_segment_mut(image, (from.x as f32, from.y as f32),
-                                (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "implementation") {}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
-    }
+        draw_dashed_line(image, Point::new(from.x, from.y),
+                                Point::new(to.x, to.y));
+        draw_inheritanceArrow(image, to.clone(), Direction::up);
 
-    draw_dashed_line(image, Point::new(200,100), Point::new(100, 100));
+    }
 }
 
 fn draw_dashed_line(image: &mut RgbImage, mut from: Point, mut to: Point){
     let mut counter = 0.0;
     let mut to_right = false;let mut to_left = false; let mut up = false;let mut down = false;
-    if(from.x < to.x) { to_right = true; println!("TRUE"); }
+    if(from.x < to.x) { to_right = true; }
     else if(from.x > to.x) { to_left = true; }
     else if(from.y < to.y) { up = true; }
     else if(from.y > to.y) { down = true; }
@@ -165,7 +251,7 @@ fn draw_dashed_line(image: &mut RgbImage, mut from: Point, mut to: Point){
         while(from.y > to.y){
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32, from.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
-            from.x = from.x - 20;
+            from.y = from.y - 20;
         }
     }
 }
@@ -399,7 +485,12 @@ pub fn generateDiagram(relationships: Vec<parser::Relationship>,
 
     //-----------------Relationships------------------------------------------//
     for relationship in relationships.clone(){
-        drawAssociation(&mut image, relationship.clone(), boxes.clone());
+        if(relationship.relation_type == "implementation"){
+            drawAssociation_dashed(&mut image, relationship.clone(), boxes.clone());
+        }
+        else{
+            drawAssociation(&mut image, relationship.clone(), boxes.clone());
+        }
     }
     image.save(path).unwrap();
     return true;
