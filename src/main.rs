@@ -28,12 +28,14 @@ fn main() {
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let packages = parser::get_packages(data.clone());
+                let relationships = parser::get_relationships(data.clone());
 
                 for package in packages {
-                    if diagramVisualizer::generateDiagram(package.classes, 720, 1280, "Test") {
+                    if diagramVisualizer::generateDiagram(relationships.clone(), package.classes, 720, 1280, "Test") {
                         println!("Diagram created!");
                     }
                 }
+
             } else {
                 println!("XML not valid or not found.");
             }
