@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<UML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Class_Schema.xsd">
+<uml_class xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Class_Schema.xsd">
 	<package name="creatures">
 		<class name="Animal">
-  	  <attribute name="legs" visibility="-" data-type="integer" />
+  	  <attribute name ="legs" visibility="-" data-type="integer" />
   	  <attribute name="eyes" visibility="-" data-type="integer" />
   	  <attribute name="weight" visibility="-" data-type="double" />
   	  <method name="eat" visibility="+" return-type="void">
@@ -14,16 +14,69 @@
   	  <method name="sound" visibility="+" return-type="void" />
   	</class>
 
-  	<class name="Bird">
-  	  <method name="fly" visibility="+" return-type="void">
-  	    <parameter name="pos" data-type="Position"/>
-  			<parameter name="speed" data-type="Integer"/>
-  	  </method>
-  	</class>
+		<class name="Prey">
+			<attribute name="legs" visibility="-" data-type="integer" />
+			<attribute name="eyes" visibility="-" data-type="integer" />
+			<attribute name="weight" visibility="-" data-type="double" />
+			<method name="sleep" visibility="+" return-type="void">
+				<parameter name="hour" data-type="Integer" />
+			</method>
+			<method name="sound" visibility="+" return-type="void" />
+		</class>
+
+		<class name="Jaguar">
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
+		<class name="Bird">
+			<method name="fly" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
+		<class name="Cat">
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
+		<class name="Dog">
+			<attribute name="legs" visibility="-" data-type="integer" />
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
 	</package>
 
 	<relationship type="inheritance">
-		<class name="Animal" multiplicity="1"/>
-		<toClass name="Bird"/>
+		<class name="Bird" multiplicity="1"/>
+		<toClass name="Animal" multiplicity = "3"/>
 	</relationship>
-</UML>
+
+	<relationship type="inheritance">
+		<class name="Cat" multiplicity="1"/>
+		<toClass name="Animal"/>
+	</relationship>
+
+	<relationship type="implementation">
+		<class name="Jaguar" multiplicity="1"/>
+		<toClass name="Cat"/>
+	</relationship>
+
+	<relationship type="composition">
+		<class name="Cat" multiplicity="1"/>
+		<toClass name="Prey"/>
+	</relationship>
+
+	<relationship type="aggregation">
+		<class name="Dog" multiplicity="24"/>
+		<toClass name="Cat"/>
+	</relationship>
+</uml_class>

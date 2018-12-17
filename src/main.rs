@@ -5,15 +5,15 @@ pub mod parser;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut valid = false;
+    let mut valid = true;
 
-    if args.len() == 3  {
-        let uml_type = &args[1];
-        let filename = &args[2];
+    if args.len() == 2  {
+        let filename = &args[1];
+        let uml_type = parser::get_uml_type(filename.clone());
 
         //PACKAGE DIAGRAM--------------------------------------------------------------------------
-        if uml_type == "package" {
-            valid = parser::validate_xml(uml_type.to_string(), filename.to_string());
+        if uml_type == "uml_package" {
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 println!("XML valid, but package diagrams not implemented.");
@@ -22,8 +22,8 @@ fn main() {
             }
 
         //CLASS DIAGRAM----------------------------------------------------------------------------
-        } else if uml_type == "class" {
-            valid = parser::validate_xml(uml_type.to_string(), filename.to_string());
+    } else if uml_type == "uml_class" {
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
@@ -39,6 +39,8 @@ fn main() {
             } else {
                 println!("XML not valid or not found.");
             }
+        } else {
+            println!("Not a valid XML file.");
         }
     }
     else if args.len() < 2 {

@@ -11,25 +11,29 @@ use std::io::BufReader;
 
 pub fn validate_xml(uml_type: String, file_name: String) -> bool {
     let mut xsd_file = "";
-    if uml_type == "class" {
+    if uml_type == "uml_class" {
         xsd_file = "xsd/UML_Class_Schema.xsd";
-    } else if uml_type == "package" {
+    } else if uml_type == "uml_package" {
         xsd_file = "xsd/UML_Package_Schema.xsd";
     }
 
     let mut command = Command::new("sh");
     command.arg("-c")
-           .arg("xmllint --schema ".to_string() + xsd_file + " " + &file_name);
+           .arg("xmllint --noout --schema ".to_string() + xsd_file + " " + &file_name);
     let output = command.output().expect("failed to execute process");
-    let xml_output = String::from_utf8_lossy(&output.stdout);
-    println!("{:?}", xml_output);
 
-    if xml_output != "" {
+    let xml_output = String::from_utf8_lossy(&output.stderr);
+
+    if xml_output == file_name + " validates\n" {
         return true;
     } else {
-        println!("{}", xml_output );
+        println!("{}", xml_output);
         return false;
     }
+}
+
+pub fn get_uml_type(file_name: String) -> String {
+    return parse_data(file_name).name;;
 }
 
 fn get_file_data(file_name: String) -> String {

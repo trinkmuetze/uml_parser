@@ -41,7 +41,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:element name="UML">
+	<xs:element name="uml_class">
 		<xs:complexType>
 			<xs:sequence>
 			<!-- PACKAGE -->
@@ -49,7 +49,7 @@
 					<xs:complexType>
 						<xs:sequence>
 							<!-- CLASS -->
-							<xs:element name="class" minOccurs="0" maxOccurs="10">
+							<xs:element name="class" minOccurs="0" maxOccurs="9">
 								<xs:complexType>
 									<xs:sequence>
 										<!-- ATTRIBUTE -->
@@ -88,19 +88,19 @@
 				</xs:element>
 
 				<!-- RELATIONSHIP -->
-				<xs:element name="relationship">
+				<xs:element name="relationship" minOccurs="0" maxOccurs="9">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="class">
 								<xs:complexType>
 									<xs:attribute name="name" type="xs:string" use="required" />
-									<xs:attribute name="multiplicity" type="multiplicity" />
+									<xs:attribute name="multiplicity" type="xs:string" />
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="toClass">
 								<xs:complexType>
 									<xs:attribute name="name" type="xs:string" use="required" />
-									<xs:attribute name="multiplicity" type="multiplicity" />
+									<xs:attribute name="multiplicity" type="xs:string" />
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
