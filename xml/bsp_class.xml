@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<UML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Class_Schema.xsd">
+<uml_class xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Class_Schema.xsd">
 	<package name="creatures">
 		<class name="Animal">
-  	  <attribute name="legs" visibility="-" data-type="integer" />
+  	  <attribute name ="legs" visibility="-" data-type="integer" />
   	  <attribute name="eyes" visibility="-" data-type="integer" />
   	  <attribute name="weight" visibility="-" data-type="double" />
   	  <method name="eat" visibility="+" return-type="void">
@@ -45,6 +45,14 @@
 			</method>
 		</class>
 
+		<class name="Dog">
+			<attribute name="legs" visibility="-" data-type="integer" />
+			<method name="run" visibility="+" return-type="void">
+				<parameter name="pos" data-type="Position"/>
+				<parameter name="speed" data-type="Integer"/>
+			</method>
+		</class>
+
 	</package>
 
 	<relationship type="inheritance">
@@ -66,4 +74,9 @@
 		<class name="Cat" multiplicity="1"/>
 		<toClass name="Prey"/>
 	</relationship>
-</UML>
+
+	<relationship type="aggregation">
+		<class name="Dog" multiplicity="24"/>
+		<toClass name="Cat"/>
+	</relationship>
+</uml_class>
