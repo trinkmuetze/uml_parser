@@ -70,7 +70,7 @@ enum Direction{
     ToLeft,
 }
 
-fn draw_association(image: &mut RgbImage, association: parser::Relationship, class_boxes: Vec<ClassBox>)
+fn draw_association(image: &mut RgbImage, association: parser::class::Relationship, class_boxes: Vec<ClassBox>)
 {
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
@@ -173,7 +173,7 @@ fn draw_association(image: &mut RgbImage, association: parser::Relationship, cla
     }
 }
 
-fn draw_association_dashed(image: &mut RgbImage, association: parser::Relationship, class_boxes: Vec<ClassBox>){
+fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Relationship, class_boxes: Vec<ClassBox>){
     let mut from_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
     let mut to_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
 
@@ -400,7 +400,7 @@ fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Directi
     }
 }
 
-fn draw_package_box(image: &mut RgbImage, package: parser::Package, x: &mut i32, y: &mut i32,
+fn draw_package_box(image: &mut RgbImage, package: parser::package::Package, x: &mut i32, y: &mut i32,
                     row: u32, column: u32) -> ClassBox
 {
     //Used RGBs
@@ -442,7 +442,7 @@ fn draw_package_box(image: &mut RgbImage, package: parser::Package, x: &mut i32,
     return package_box;
 }
 
-fn drawclass_box(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mut i32, width: u32, height: u32,
+fn drawclass_box(image: &mut RgbImage, class: parser::class::Class, x: &mut i32, y: &mut i32, width: u32, height: u32,
                     row: u32, column: u32) -> ClassBox
 {
     //Used RGBs
@@ -521,7 +521,7 @@ fn drawclass_box(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mu
     return class_box;
 }
 
-fn draw_object_box(image: &mut RgbImage, object: parser::Object, x: &mut i32, y: &mut i32, width: u32, height: u32,
+/*fn draw_object_box(image: &mut RgbImage, object: parser::Object, x: &mut i32, y: &mut i32, width: u32, height: u32,
                     row: u32, column: u32) -> ClassBox
 {
     //Used RGBs
@@ -598,10 +598,9 @@ fn draw_object_box(image: &mut RgbImage, object: parser::Object, x: &mut i32, y:
     *x = box_width as i32 + *x + 50;
     //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(box_width, box_height), black);
     return class_box;
-}
+}*/
 
-pub fn generate_package_diagram(relationships: Vec<parser::Relationship>,
-        packages: Vec<parser::Package>, height: u32, width: u32, diagram_name: &str) -> bool
+pub fn generate_package_diagram(packages: Vec<parser::package::Package>, height: u32, width: u32, diagram_name: &str) -> bool
 {
     let mut boxes: Vec<ClassBox> = Vec::new();
     //Path of the diagram
@@ -638,7 +637,7 @@ pub fn generate_package_diagram(relationships: Vec<parser::Relationship>,
             column = 0;
             row = row + 1;
         }
-        for class in package.classes
+        for class in package.packages.clone()
         {
             class_column = class_column + 1;
             if class_column > 3 {
@@ -650,15 +649,15 @@ pub fn generate_package_diagram(relationships: Vec<parser::Relationship>,
     }
 
     //-----------------Relationships------------------------------------------//
-    for relationship in relationships.clone(){
+    /*for relationship in relationships.clone(){
             draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
-    }
+    }*/
     image.save(path).unwrap();
     return true;
 }
 
-pub fn generate_class_diagram(relationships: Vec<parser::Relationship>,
-    classes: Vec<parser::Class>, height: u32, width: u32, diagram_name: &str) -> bool
+pub fn generate_class_diagram(relationships: Vec<parser::class::Relationship>,
+    classes: Vec<parser::class::Class>, height: u32, width: u32, diagram_name: &str) -> bool
 {
     let mut boxes: Vec<ClassBox> = Vec::new();
     //Path of the diagram
@@ -709,7 +708,7 @@ pub fn generate_class_diagram(relationships: Vec<parser::Relationship>,
     return true;
 }
 
-pub fn generate_object_diagram (relationships: Vec<parser::Relationship>,
+/*pub fn generate_object_diagram (relationships: Vec<parser::Relationship>,
     objects: Vec<parser::Object>, height: u32, width: u32, diagram_name: &str) -> bool
 {
     let mut boxes: Vec<ClassBox> = Vec::new();
@@ -759,4 +758,4 @@ pub fn generate_object_diagram (relationships: Vec<parser::Relationship>,
     }
     image.save(path).unwrap();
     return true;
-}
+}*/
