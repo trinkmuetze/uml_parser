@@ -31,7 +31,7 @@ fn main() {
                 let relationships = parser::get_relationships(data.clone());
 
                 for package in packages {
-                    if diagramVisualizer::generateDiagram(relationships.clone(), package.classes, 720, 1280, "Test") {
+                    if diagramVisualizer::generate_class_diagram(relationships.clone(), package.classes, 720, 1280, "Test") {
                         println!("Diagram created!");
                     }
                 }

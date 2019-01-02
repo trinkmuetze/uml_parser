@@ -61,47 +61,44 @@ impl ClassBox{
             associations: 0,
         }
     }
-    fn increaseAssociations(&mut self){
-        self.associations = self.associations + 1;
-    }
 }
 
 enum Direction{
-    to_right,
-    up,
-    down,
-    to_left,
+    ToRight,
+    Up,
+    Down,
+    ToLeft,
 }
 
-fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>)
+fn draw_association(image: &mut RgbImage, association: parser::Relationship, class_boxes: Vec<ClassBox>)
 {
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
 
-    let mut size = 10.0;
-    let mut scale = Scale { x: size, y: size };
+    let size = 10.0;
+    let scale = Scale { x: size, y: size };
 
     let num = rand::thread_rng().gen_range(0, 100);
-    let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
-    let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+    let mut from_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+    let mut to_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
 
-    for classBox in classBoxes{
-        if classBox.name == association.class.name{ fromBox = classBox.clone(); }
-        if classBox.name == association.to_class.name{ toBox = classBox.clone(); }
+    for class_box in class_boxes{
+        if class_box.name == association.class.name{ from_box = class_box.clone(); }
+        if class_box.name == association.to_class.name{ to_box = class_box.clone(); }
     }
 
-    let mut from = Point::new(fromBox.start.x +fromBox.box_width/2,
-                                fromBox.start.y);
-    let mut to = Point::new(toBox.start.x + toBox.box_width/2,
-                                toBox.start.y + toBox.box_height);
+    let mut from = Point::new(from_box.start.x +from_box.box_width/2,
+                                from_box.start.y);
+    let mut to = Point::new(to_box.start.x + to_box.box_width/2,
+                                to_box.start.y + to_box.box_height);
 
-    if(fromBox.start.y == toBox.start.y){
-        from = Point::new(fromBox.start.x + fromBox.box_width/2,
-                                    fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y + toBox.box_height);
+    if from_box.start.y == to_box.start.y {
+        from = Point::new(from_box.start.x + from_box.box_width/2,
+                                    from_box.start.y + from_box.box_height);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y + to_box.box_height);
 
-        if(fromBox.box_height > toBox.box_height){
+        if from_box.box_height > to_box.box_height {
             draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y + 5, scale, &font, &association.class.multiplicity.to_string());
 
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
@@ -125,18 +122,18 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
             draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_class.multiplicity.to_string());
         }
 
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "implementation") {}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+        if association.relation_type == "association" {}
+        else if association.relation_type == "aggregation" { draw_aggregation_arrow(image, to.clone(), Direction::Up);}
+        else if association.relation_type == "composition" {draw_composition_arrow(image, to.clone(), Direction::Up)}
+        else if association.relation_type == "inheritance" { draw_inheritance_arrow(image, to.clone(), Direction::Up);}
+        else if association.relation_type == "implementation" {}
+        else if association.relation_type == "dependency" {draw_arrow(image, to.clone(), Direction::Up);}
     }
-    else if (fromBox.start.y < toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
-                                    fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y);
+    else if from_box.start.y < to_box.start.y {
+        from = Point::new(from_box.start.x +from_box.box_width/2 + num,
+                                    from_box.start.y + from_box.box_height);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y);
         draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y + 5, scale, &font, &association.class.multiplicity.to_string());
 
         draw_line_segment_mut(image, (from.x as f32, from.y as f32),
@@ -147,17 +144,17 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
                                 (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
         draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_class.multiplicity.to_string());
 
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::down);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::down)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::down);}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+        if association.relation_type == "association" {}
+        else if association.relation_type == "aggregation" { draw_aggregation_arrow(image, to.clone(), Direction::Down);}
+        else if association.relation_type == "composition" {draw_composition_arrow(image, to.clone(), Direction::Down)}
+        else if association.relation_type == "inheritance" { draw_inheritance_arrow(image, to.clone(), Direction::Down);}
+        else if association.relation_type == "dependency" {draw_arrow(image, to.clone(), Direction::Up);}
     }
-    else if (fromBox.start.y > toBox.start.y){
-        from = Point::new(fromBox.start.x + fromBox.box_width/2 + num,
-                                    fromBox.start.y);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y + toBox.box_height);
+    else if from_box.start.y > to_box.start.y {
+        from = Point::new(from_box.start.x + from_box.box_width/2 + num,
+                                    from_box.start.y);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y + to_box.box_height);
         draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 5, from.y - 10, scale, &font, &association.class.multiplicity.to_string());
         draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 20, scale, &font, &association.to_class.multiplicity.to_string());
 
@@ -168,37 +165,36 @@ fn drawAssociation(image: &mut RgbImage, association: parser::Relationship, clas
         draw_line_segment_mut(image, (to.x as f32, from.y as f32 - num as f32),
                                 (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
 
-        if(association.relation_type == "association") {}
-        else if (association.relation_type == "aggregation") { draw_aggregation_arrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "composition") {draw_composition_arrow(image, to.clone(), Direction::up)}
-        else if (association.relation_type == "inheritance") { draw_inheritanceArrow(image, to.clone(), Direction::up);}
-        else if (association.relation_type == "dependency") {drawArrow(image, to.clone(), Direction::up);}
+        if association.relation_type == "association" {}
+        else if association.relation_type == "aggregation" { draw_aggregation_arrow(image, to.clone(), Direction::Up);}
+        else if association.relation_type == "composition" {draw_composition_arrow(image, to.clone(), Direction::Up)}
+        else if association.relation_type == "inheritance" { draw_inheritance_arrow(image, to.clone(), Direction::Up);}
+        else if association.relation_type == "dependency" {draw_arrow(image, to.clone(), Direction::Up);}
     }
 }
 
-fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationship, classBoxes: Vec<ClassBox>){
-    let mut fromBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
-    let mut toBox: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+fn draw_association_dashed(image: &mut RgbImage, association: parser::Relationship, class_boxes: Vec<ClassBox>){
+    let mut from_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+    let mut to_box: ClassBox = ClassBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
 
     let num = rand::thread_rng().gen_range(0, 100);
 
-    for classBox in classBoxes{
-        if classBox.name == association.class.name{ fromBox = classBox.clone(); }
-        if classBox.name == association.to_class.name{ toBox = classBox.clone(); }
+    for class_box in class_boxes {
+        if class_box.name == association.class.name { from_box = class_box.clone(); }
+        if class_box.name == association.to_class.name { to_box = class_box.clone(); }
     }
+    let mut from = Point::new(from_box.start.x +from_box.box_width/2,
+                                from_box.start.y);
+    let mut to = Point::new(to_box.start.x + to_box.box_width/2,
+                                to_box.start.y + to_box.box_height);
 
-    let mut from = Point::new(fromBox.start.x +fromBox.box_width/2,
-                                fromBox.start.y);
-    let mut to = Point::new(toBox.start.x + toBox.box_width/2,
-                                toBox.start.y + toBox.box_height);
+    if from_box.start.y == to_box.start.y {
+        from = Point::new(from_box.start.x +from_box.box_width/2 + num,
+                                    from_box.start.y + from_box.box_height);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y + to_box.box_height);
 
-    if(fromBox.start.y == toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
-                                    fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y + toBox.box_height);
-
-        if(fromBox.box_height > toBox.box_height){
+        if from_box.box_height > to_box.box_height {
             draw_dashed_line(image, Point::new(from.x, from.y),
                                     Point::new(from.x, from.y + 20));
             draw_dashed_line(image, Point::new(from.x, from.y + 20),
@@ -206,7 +202,7 @@ fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationshi
             draw_dashed_line(image, Point::new(to.x, from.y + 20),
                                     Point::new(to.x, to.y));
         }
-        else{
+        else {
             draw_dashed_line(image, Point::new(from.x, from.y),
                                     Point::new(from.x, to.y + 20));
             draw_dashed_line(image, Point::new(from.x, to.y + 20),
@@ -214,68 +210,68 @@ fn drawAssociation_dashed(image: &mut RgbImage, association: parser::Relationshi
             draw_dashed_line(image, Point::new(to.x, to.y + 20),
                                     Point::new(to.x, to.y));
         }
-        draw_inheritanceArrow(image, to.clone(), Direction::up);
+        draw_inheritance_arrow(image, to.clone(), Direction::Up);
     }
-    else if (fromBox.start.y < toBox.start.y){
-        from = Point::new(fromBox.start.x +fromBox.box_width/2 + num,
-                                    fromBox.start.y + fromBox.box_height);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y);
+    else if from_box.start.y < to_box.start.y {
+        from = Point::new(from_box.start.x +from_box.box_width/2 + num,
+                                    from_box.start.y + from_box.box_height);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y);
         draw_dashed_line(image, Point::new(from.x, from.y),
                                 Point::new(from.x, from.y + num));
         draw_dashed_line(image, Point::new(from.x, from.y + num),
                                 Point::new(to.x, from.y + num));
         draw_dashed_line(image, Point::new(to.x, from.y + num),
                                 Point::new(to.x, to.y));
-        draw_inheritanceArrow(image, to.clone(), Direction::down);
+        draw_inheritance_arrow(image, to.clone(), Direction::Down);
     }
-    else if (fromBox.start.y > toBox.start.y){
-        from = Point::new(fromBox.start.x + fromBox.box_width/2 + num,
-                                    fromBox.start.y);
-        to = Point::new(toBox.start.x + toBox.box_width/2 + num,
-                                    toBox.start.y + toBox.box_height);
+    else if from_box.start.y > to_box.start.y {
+        from = Point::new(from_box.start.x + from_box.box_width/2 + num,
+                                    from_box.start.y);
+        to = Point::new(to_box.start.x + to_box.box_width/2 + num,
+                                    to_box.start.y + to_box.box_height);
         draw_dashed_line(image, Point::new(from.x, from.y),
                                 Point::new(from.x, from.y - num));
         draw_dashed_line(image, Point::new(from.x, from.y - num),
                                 Point::new(to.x, from.y - num));
         draw_dashed_line(image, Point::new(to.x, from.y - num),
                                 Point::new(to.x, to.y));
-        draw_inheritanceArrow(image, to.clone(), Direction::up);
+        draw_inheritance_arrow(image, to.clone(), Direction::Up);
 
     }
 }
 
-fn draw_dashed_line(image: &mut RgbImage, mut from: Point, mut to: Point){
-    let mut counter = 0.0;
+fn draw_dashed_line(image: &mut RgbImage, mut from: Point, to: Point){
+    let counter = 0.0;
     let mut to_right = false;let mut to_left = false; let mut up = false;let mut down = false;
-    if(from.x < to.x) { to_right = true; }
-    else if(from.x > to.x) { to_left = true; }
-    else if(from.y < to.y) { up = true; }
-    else if(from.y > to.y) { down = true; }
+    if from.x < to.x { to_right = true; }
+    else if from.x > to.x { to_left = true; }
+    else if from.y < to.y { up = true; }
+    else if from.y > to.y { down = true; }
 
-    if(to_right == true){
-        while(from.x < to.x){
+    if to_right == true {
+        while from.x < to.x {
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32 +10.0, from.y as f32), Rgb([0u8, 0u8, 0u8]));
             from.x = from.x + 20;
         }
     }
-    else if(to_left == true){
-        while(from.x > to.x){
+    else if to_left == true {
+        while from.x > to.x {
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32 - 10.0, from.y as f32), Rgb([0u8, 0u8, 0u8]));
             from.x = from.x - 20;
         }
     }
-    else if(up == true){
-        while(from.y < to.y){
+    else if up == true {
+        while from.y < to.y {
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32, from.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
             from.y = from.y + 20;
         }
     }
-    else if(down == true){
-        while(from.y > to.y){
+    else if down == true {
+        while from.y > to.y {
             draw_line_segment_mut(image, (from.x as f32, from.y as f32),
                                     (from.x as f32, from.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
             from.y = from.y - 20;
@@ -283,32 +279,32 @@ fn draw_dashed_line(image: &mut RgbImage, mut from: Point, mut to: Point){
     }
 }
 
-fn drawArrow(image: &mut RgbImage, point: Point, direction: Direction){
-    match direction{
-        Direction::up =>{
+fn draw_arrow(image: &mut RgbImage, point: Point, direction: Direction){
+    match direction {
+        Direction::Up => {
         draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                 (point.x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
         draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                 (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
                             },
-        Direction::down =>{
+        Direction::Down => {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 + 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
                                 },
-        Direction::to_left =>{
+        Direction::ToLeft => {
 
         },
-        Direction::to_right =>{
+        Direction::ToRight =>{
 
         },
     }
 }
 
-fn draw_inheritanceArrow(image: &mut RgbImage, point: Point, direction: Direction) {
+fn draw_inheritance_arrow(image: &mut RgbImage, point: Point, direction: Direction) {
     match direction{
-        Direction::up =>{
+        Direction::Up => {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -316,7 +312,7 @@ fn draw_inheritanceArrow(image: &mut RgbImage, point: Point, direction: Directio
             draw_line_segment_mut(image, (point.x as f32 - 10.0, point.y as f32 + 15.0),
                                     (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
                             },
-        Direction::down =>{
+        Direction::Down => {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 + 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -324,10 +320,10 @@ fn draw_inheritanceArrow(image: &mut RgbImage, point: Point, direction: Directio
             draw_line_segment_mut(image, (point.x as f32 + 10.0, point.y as f32 - 15.0),
                                     (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
                                 },
-        Direction::to_left =>{
+        Direction::ToLeft => {
 
         },
-        Direction::to_right =>{
+        Direction::ToRight => {
 
         },
     }
@@ -335,7 +331,7 @@ fn draw_inheritanceArrow(image: &mut RgbImage, point: Point, direction: Directio
 
 fn draw_aggregation_arrow(image: &mut RgbImage, point: Point, direction: Direction){
     match direction{
-        Direction::up =>{
+        Direction::Up => {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -345,7 +341,7 @@ fn draw_aggregation_arrow(image: &mut RgbImage, point: Point, direction: Directi
             draw_line_segment_mut(image, (point.x as f32 + 10.0, point.y as f32 + 15.0),
                                     (point.x as f32, point.y as f32 + 30.0), Rgb([0u8, 0u8, 0u8]));
                             },
-        Direction::down =>{
+        Direction::Down => {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point.x as f32 + 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -355,20 +351,20 @@ fn draw_aggregation_arrow(image: &mut RgbImage, point: Point, direction: Directi
             draw_line_segment_mut(image, (point.x as f32 - 10.0, point.y as f32 - 15.0),
                                     (point.x as f32, point.y as f32 - 30.0), Rgb([0u8, 0u8, 0u8]));
                                 },
-        Direction::to_left =>{
+        Direction::ToLeft => {
 
         },
-        Direction::to_right =>{
+        Direction::ToRight => {
 
         },
     }
 }
 
 fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Direction){
-    match direction{
-        Direction::up =>{
+    match direction {
+        Direction::Up => {
             let mut point_x = point.x + 10;
-            while point_x > point.x{
+            while point_x > point.x {
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
                                     (point_x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -380,7 +376,7 @@ fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Directi
             point_x = point_x - 1;
                                 }
                             },
-        Direction::down =>{
+        Direction::Down => {
             let mut point_x = point.x + 10;
             while point_x > point.x{
             draw_line_segment_mut(image, (point.x as f32, point.y as f32),
@@ -395,16 +391,58 @@ fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Directi
             point_x = point_x -1;
                                 }
                                 },
-        Direction::to_left =>{
+        Direction::ToLeft => {
 
         },
-        Direction::to_right =>{
+        Direction::ToRight => {
 
         },
     }
 }
 
-fn drawClassBox(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mut i32, width: u32, height: u32,
+fn draw_package_box(image: &mut RgbImage, package: parser::Package, x: &mut i32, y: &mut i32,
+                    row: u32, column: u32) -> ClassBox
+{
+    //Used RGBs
+    let white = Rgb([255u8, 255u8, 255u8]);
+    let black = Rgb([0u8, 0u8, 0u8]);
+
+    //Configuring the font
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+
+    let mut counter = 1;
+
+    let size = 16.0;
+    let scale = Scale { x: size, y: size };
+    let box_height = size as u32;
+    let mut max_characters = 0;
+    let package_box: ClassBox;
+
+    max_characters = package.name.len();
+
+    if column == 0 { *x = 50; }
+
+    if row > 0 && column == 0 { *y = *y + 300; }
+
+    draw_text_mut(image, black, *x as u32 + 5, *y as u32 + 2, scale, &font, &package.name);
+
+    //Generate the box
+
+    let nametag_box_width = (size as u32 -6)*(max_characters as u32);
+    let box_width = (size as u32 -6)*(max_characters as u32);
+
+    draw_hollow_rect_mut(image, Rect::at(*x,*y).of_size(nametag_box_width, size as u32), black);
+
+    draw_hollow_rect_mut(image, Rect::at(*x,*y + size as i32).of_size(box_width, box_height), black);
+
+    package_box = ClassBox::new(package.name, Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
+    *x = box_width as i32 + *x + 50;
+    //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(box_width, box_height), black);
+    return package_box;
+}
+
+fn drawclass_box(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mut i32, width: u32, height: u32,
                     row: u32, column: u32) -> ClassBox
 {
     //Used RGBs
@@ -420,34 +458,34 @@ fn drawClassBox(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mut
     let attribute_len = class.attributes.len();
     let method_len = class.methods.len();
 
-    let mut size = 16.0;
-    let mut scale = Scale { x: size, y: size };
-    let mut boxHeight = (attribute_len + method_len + 3) as u32 * size as u32;
-    let mut textPosition_Y = 0;
-    let mut maxCharacters = 0;
-    let mut classBox: ClassBox;
+    let size = 16.0;
+    let scale = Scale { x: size, y: size };
+    let box_height = (attribute_len + method_len + 3) as u32 * size as u32;
+    let mut text_position_y = 0;
+    let mut max_characters = 0;
+    let class_box: ClassBox;
 
-    if maxCharacters < class.name.len()
+    if max_characters < class.name.len()
     {
-        maxCharacters = class.name.len();
+        max_characters = class.name.len();
     }
 
-    if (column == 0) { *x = 50; }
+    if column == 0 { *x = 50; }
 
-    if (row > 0 && column == 0) { *y = *y + 300; }
+    if row > 0 && column == 0 { *y = *y + 300; }
 
     draw_text_mut(image, black, *x as u32 + 5, *y as u32 + 2, scale, &font, &class.name);
     //-----------------------------------Attributes------------------------------------------------
     for attribute in class.attributes
     {
         let attribute_line = attribute.visibility + &attribute.name + " : " + &attribute.data_type;
-        if(maxCharacters < attribute_line.len())
+        if max_characters < attribute_line.len()
         {
-            maxCharacters = attribute_line.len();
+            max_characters = attribute_line.len();
         }
-        textPosition_Y = *y as u32 + 10 + (counter as u32 * size as u32);
+        text_position_y = *y as u32 + 10 + (counter as u32 * size as u32);
 
-        draw_text_mut(image, black, *x as u32 + 5, textPosition_Y, scale, &font, &attribute_line);
+        draw_text_mut(image, black, *x as u32 + 5, text_position_y, scale, &font, &attribute_line);
         counter = counter +1;
     }
     counter = counter +1;
@@ -461,35 +499,113 @@ fn drawClassBox(image: &mut RgbImage, class: parser::Class, x: &mut i32, y: &mut
         parameters.pop();
         parameters.pop();
         let method_line = method.visibility + &method.name + "(" + &parameters + ")";
-        if maxCharacters < method_line.len()
+        if max_characters < method_line.len()
         {
-            maxCharacters = method_line.len();
+            max_characters = method_line.len();
         }
-        textPosition_Y = *y as u32 + 10 + (counter as u32 * size as u32);
-        draw_text_mut(image, black, *x as u32 + 5, textPosition_Y, scale, &font, &method_line);
+        text_position_y = *y as u32 + 10 + (counter as u32 * size as u32);
+        draw_text_mut(image, black, *x as u32 + 5, text_position_y, scale, &font, &method_line);
         counter = counter +1;
     }
     //Generate the box
-    let mut boxWidth = (size as u32 -6)*(maxCharacters as u32);
+    let box_width = (size as u32 -6)*(max_characters as u32);
     draw_line_segment_mut(image, (*x as f32, *y as f32 + (size*(attribute_len as f32 + 2.0)) + 5.0),
-                        (*x as f32 + boxWidth as f32, *y as f32 + size*(attribute_len as f32 + 2.0) + 5.0), black);
+                        (*x as f32 + box_width as f32, *y as f32 + size*(attribute_len as f32 + 2.0) + 5.0), black);
     draw_line_segment_mut(image, (*x as f32, *y as f32 + size + 5.0),
-                                    (*x as f32 + boxWidth as f32, *y as f32 + size + 5.0), black);
-    draw_hollow_rect_mut(image, Rect::at(*x,*y).of_size(boxWidth, boxHeight), black);
+                                    (*x as f32 + box_width as f32, *y as f32 + size + 5.0), black);
+    draw_hollow_rect_mut(image, Rect::at(*x,*y).of_size(box_width, box_height), black);
 
-    classBox = ClassBox::new(class.name, Point::new(*x as u32,*y as u32), boxWidth, boxHeight, row, column);
-    *x = boxWidth as i32 + *x + 50;
-    //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(boxWidth, boxHeight), black);
-    return classBox;
+    class_box = ClassBox::new(class.name, Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
+    *x = box_width as i32 + *x + 50;
+    //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(box_width, box_height), black);
+    return class_box;
 }
 
+fn draw_object_box(image: &mut RgbImage, object: parser::Object, x: &mut i32, y: &mut i32, width: u32, height: u32,
+                    row: u32, column: u32) -> ClassBox
+{
+    //Used RGBs
+    let white = Rgb([255u8, 255u8, 255u8]);
+    let black = Rgb([0u8, 0u8, 0u8]);
 
-pub fn generateDiagram(relationships: Vec<parser::Relationship>,
-    classes: Vec<parser::Class>, height: u32, width: u32, diagramName: &str) -> bool
+    //Configuring the font
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+
+    let mut counter = 1;
+
+    let attribute_len = class.attributes.len();
+    let method_len = class.methods.len();
+
+    let size = 16.0;
+    let scale = Scale { x: size, y: size };
+    let box_height = (attribute_len + method_len + 3) as u32 * size as u32;
+    let mut text_position_y = 0;
+    let mut max_characters = 0;
+    let class_box: ClassBox;
+
+    if max_characters < class.name.len()
+    {
+        max_characters = class.name.len();
+    }
+
+    if column == 0 { *x = 50; }
+
+    if row > 0 && column == 0 { *y = *y + 300; }
+
+    draw_text_mut(image, black, *x as u32 + 5, *y as u32 + 2, scale, &font, &class.name);
+    //-----------------------------------Attributes------------------------------------------------
+    for attribute in class.attributes
+    {
+        let attribute_line = attribute.visibility + &attribute.name + " : " + &attribute.data_type;
+        if max_characters < attribute_line.len()
+        {
+            max_characters = attribute_line.len();
+        }
+        text_position_y = *y as u32 + 10 + (counter as u32 * size as u32);
+
+        draw_text_mut(image, black, *x as u32 + 5, text_position_y, scale, &font, &attribute_line);
+        counter = counter +1;
+    }
+    counter = counter +1;
+    for method in class.methods
+    {
+        let mut parameters : String = "".to_string();
+        for parameter in method.parameters {
+            let parameter_line : String = parameter.name + " : " + &parameter.data_type + ", ";
+            parameters.push_str(&parameter_line);
+        }
+        parameters.pop();
+        parameters.pop();
+        let method_line = method.visibility + &method.name + "(" + &parameters + ")";
+        if max_characters < method_line.len()
+        {
+            max_characters = method_line.len();
+        }
+        text_position_y = *y as u32 + 10 + (counter as u32 * size as u32);
+        draw_text_mut(image, black, *x as u32 + 5, text_position_y, scale, &font, &method_line);
+        counter = counter +1;
+    }
+    //Generate the box
+    let box_width = (size as u32 -6)*(max_characters as u32);
+    draw_line_segment_mut(image, (*x as f32, *y as f32 + (size*(attribute_len as f32 + 2.0)) + 5.0),
+                        (*x as f32 + box_width as f32, *y as f32 + size*(attribute_len as f32 + 2.0) + 5.0), black);
+    draw_line_segment_mut(image, (*x as f32, *y as f32 + size + 5.0),
+                                    (*x as f32 + box_width as f32, *y as f32 + size + 5.0), black);
+    draw_hollow_rect_mut(image, Rect::at(*x,*y).of_size(box_width, box_height), black);
+
+    class_box = ClassBox::new(class.name, Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
+    *x = box_width as i32 + *x + 50;
+    //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(box_width, box_height), black);
+    return class_box;
+}
+
+pub fn generate_package_diagram(relationships: Vec<parser::Relationship>,
+        packages: Vec<parser::Package>, height: u32, width: u32, diagram_name: &str) -> bool
 {
     let mut boxes: Vec<ClassBox> = Vec::new();
     //Path of the diagram
-    let path = Path::new("diagram.png");
+    let path = Path::new("class_diagram.png");
 
     //Used RGBs
     let white = Rgb([255u8, 255u8, 255u8]);
@@ -504,11 +620,68 @@ pub fn generateDiagram(relationships: Vec<parser::Relationship>,
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
     let mut size = 30.0;
-    let mut scale = Scale { x: size, y: size };
+    let scale = Scale { x: size, y: size };
 
     //White Background with title of the diagram
     draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
-    draw_text_mut(&mut image, black, (width/2)-(diagramName.len() as u32*size as u32/2), 10, scale, &font, &diagramName);
+    draw_text_mut(&mut image, black, (width/2)-(diagram_name.len() as u32*size as u32/2), 10, scale, &font, &diagram_name);
+
+    let mut row = 0;
+    let mut column = 0;
+    let mut class_row = 0;
+    let mut class_column = 0;
+
+    for package in packages.clone() {
+        //Generating the class box
+        column = column + 1;
+        if column > 3 {
+            column = 0;
+            row = row + 1;
+        }
+        for class in package.classes
+        {
+            class_column = class_column + 1;
+            if class_column > 3 {
+                class_column = 0;
+                class_row = class_row + 1;
+            }
+        }
+        boxes.push(draw_package_box(&mut image, package.clone(), &mut x, &mut y, row, column));
+    }
+
+    //-----------------Relationships------------------------------------------//
+    for relationship in relationships.clone(){
+            draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
+    }
+    image.save(path).unwrap();
+    return true;
+}
+
+pub fn generate_class_diagram(relationships: Vec<parser::Relationship>,
+    classes: Vec<parser::Class>, height: u32, width: u32, diagram_name: &str) -> bool
+{
+    let mut boxes: Vec<ClassBox> = Vec::new();
+    //Path of the diagram
+    let path = Path::new("class_diagram.png");
+
+    //Used RGBs
+    let white = Rgb([255u8, 255u8, 255u8]);
+    let black = Rgb([0u8, 0u8, 0u8]);
+
+    //Origin of the first class
+    let mut x = 50;
+    let mut y = 70;
+
+    let mut image:RgbImage = RgbImage::new(width, height);
+    //Configuring the font
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+    let mut size = 30.0;
+    let scale = Scale { x: size, y: size };
+
+    //White Background with title of the diagram
+    draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
+    draw_text_mut(&mut image, black, (width/2)-(diagram_name.len() as u32*size as u32/2), 10, scale, &font, &diagram_name);
 
     let mut row = 0;
     let mut column = 0;
@@ -516,20 +689,72 @@ pub fn generateDiagram(relationships: Vec<parser::Relationship>,
     for class in classes.clone() {
         //Generating the class box
         column = column + 1;
-        if (column > 3){
+        if column > 3 {
             column = 0;
             row = row + 1;
         }
-        boxes.push(drawClassBox(&mut image, class.clone(), &mut x, &mut y, width.clone(), height.clone(), row, column));
+        boxes.push(drawclass_box(&mut image, class.clone(), &mut x, &mut y, width.clone(), height.clone(), row, column));
     }
 
     //-----------------Relationships------------------------------------------//
     for relationship in relationships.clone(){
-        if(relationship.relation_type == "implementation"){
-            drawAssociation_dashed(&mut image, relationship.clone(), boxes.clone());
+        if relationship.relation_type == "implementation" {
+            draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
         }
-        else{
-            drawAssociation(&mut image, relationship.clone(), boxes.clone());
+        else {
+            draw_association(&mut image, relationship.clone(), boxes.clone());
+        }
+    }
+    image.save(path).unwrap();
+    return true;
+}
+
+pub fn generate_object_diagram (relationships: Vec<parser::Relationship>,
+    objects: Vec<parser::Object>, height: u32, width: u32, diagram_name: &str) -> bool
+{
+    let mut boxes: Vec<ClassBox> = Vec::new();
+    //Path of the diagram
+    let path = Path::new("class_diagram.png");
+
+    //Used RGBs
+    let white = Rgb([255u8, 255u8, 255u8]);
+    let black = Rgb([0u8, 0u8, 0u8]);
+
+    //Origin of the first class
+    let mut x = 50;
+    let mut y = 70;
+
+    let mut image:RgbImage = RgbImage::new(width, height);
+    //Configuring the font
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+    let mut size = 30.0;
+    let scale = Scale { x: size, y: size };
+
+    //White Background with title of the diagram
+    draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
+    draw_text_mut(&mut image, black, (width/2)-(diagram_name.len() as u32*size as u32/2), 10, scale, &font, &diagram_name);
+
+    let mut row = 0;
+    let mut column = 0;
+
+    for class in classes.clone() {
+        //Generating the class box
+        column = column + 1;
+        if column > 3 {
+            column = 0;
+            row = row + 1;
+        }
+        boxes.push(drawclass_box(&mut image, class.clone(), &mut x, &mut y, width.clone(), height.clone(), row, column));
+    }
+
+    //-----------------Relationships------------------------------------------//
+    for relationship in relationships.clone(){
+        if relationship.relation_type == "implementation" {
+            draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
+        }
+        else {
+            draw_association(&mut image, relationship.clone(), boxes.clone());
         }
     }
     image.save(path).unwrap();
