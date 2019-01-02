@@ -10,6 +10,15 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:complexType name="package">
+    <xs:sequence>
+      <xs:element name="package" minOccurs="0" maxOccurs="10" type="package"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="relation" type="relation" />
+    <xs:attribute name="toPackage" type="xs:string" />
+  </xs:complexType>
+
   <xs:element name="uml_package">
     <xs:complexType>
 			<xs:sequence>
@@ -17,8 +26,8 @@
       		<xs:complexType>
       			<xs:sequence>
               <!-- PACKAGE -->
-              <xs:element name="package" minOccurs="0" maxOccurs="10">
-                <xs:complexType>
+              <xs:element name="package" minOccurs="0" maxOccurs="10" type="package"/>
+                <!--<xs:complexType>
                   <xs:sequence>
                     <xs:element name="package" minOccurs="0" maxOccurs="10">
                       <xs:complexType>
@@ -32,7 +41,7 @@
                   <xs:attribute name="relation" type="relation" />
                   <xs:attribute name="toPackage" type="xs:string" />
                 </xs:complexType>
-              </xs:element>
+              </xs:element>-->
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required" />
           </xs:complexType>

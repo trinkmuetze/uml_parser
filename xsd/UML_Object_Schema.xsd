@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="uml_object">
+    <xs:complexType>
+			<xs:sequence>
+      <!-- OBJECT -->
+        <xs:element name="object" minOccurs="0" maxOccurs="9">
+          <xs:complexType>
+						<xs:sequence>
+              <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="type" type="xs:string" />
+                  <xs:attribute name="value" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" />
+            <xs:attribute name="class" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      <!-- LINK -->
+        <xs:element name="link" minOccurs="0" maxOccurs="9">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="object" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="role" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="toObject" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="role" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+
+  </xs:element>
+</xs:schema>

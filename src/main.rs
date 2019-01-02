@@ -17,18 +17,16 @@ fn main() {
 
             if valid {
                 println!("XML valid, but package diagrams not implemented.");
-            } else {
-                println!("XML not valid or not found.");
             }
 
         //CLASS DIAGRAM----------------------------------------------------------------------------
-    } else if uml_type == "uml_class" {
+        } else if uml_type == "uml_class" {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
-                let packages = parser::get_packages(data.clone());
-                let relationships = parser::get_relationships(data.clone());
+                let packages = parser::class::get_packages(data.clone());
+                let relationships = parser::class::get_relationships(data.clone());
 
                 for package in packages {
                     if diagramVisualizer::generateDiagram(relationships.clone(), package.classes, 720, 1280, "Test") {
@@ -38,6 +36,13 @@ fn main() {
 
             } else {
                 println!("XML not valid or not found.");
+            }
+        //OBJECT DIAGRAM----------------------------------------------------------------------------
+        } else if uml_type == "uml_object" {
+            valid = parser::validate_xml(uml_type, filename.to_string());
+
+            if valid {
+                println!("XML valid, but package diagrams not implemented.");
             }
         } else {
             println!("Not a valid XML file.");
