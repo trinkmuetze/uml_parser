@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml_object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Object_Schema.xsd">
+
+  <object name="lieblingsgrieche" class="Restaurant">
+    <attribute name="kategorie" type="Sterne" value="3"/>
+    <attribute name="name" value="Platon"/>
+  </object>
+  <object class="Kellner">
+    <attribute name="persAusweisNr" value="12345"/>
+    <attribute name="gehalt" value="1500" type="EUR"/>
+  </object>
+  <object name="maren" class="Gast">
+    <attribute name="status" value="König"/>
+    <attribute name="geldbetrag" value="300" type="EUR"/>
+    <attribute name="hunger" value="true"/>
+  </object>
+
+  <link name="bedient">
+    <object name="Kellner"/>
+    <toObject name="maren"/>
+  </link>
+
+  <link>
+    <object name="Kellner" role="Arbeitnehmer"/>
+    <toObject name="lieblingsgrieche" role="Arbeitgeber"/>
+  </link>
+
+</uml_object>
