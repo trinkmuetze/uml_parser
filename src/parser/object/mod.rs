@@ -19,7 +19,7 @@ pub struct Attribute {
 pub struct Link {
     pub name: String,
     pub object: LinkObject,
-    pub toObject: LinkObject,
+    pub to_object: LinkObject,
 }
 
 #[derive(Clone, Debug)]

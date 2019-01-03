@@ -69,9 +69,9 @@ fn get_packages(elements:Vec<Element>) -> Vec<Package>{
                 if key.to_string() == "name" {
                     n = value;
                 } else if key.to_string() == "relation" {
-
+                    r = value;
                 } else if key.to_string() == "toPackage" {
-
+                    tp = value;
                 }
             }
 
