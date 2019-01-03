@@ -68,7 +68,7 @@ pub fn get_objects(main: Element) -> Vec<Object> {
 pub fn get_links(main: Element) -> Vec<Link> {
     //Vektor für alle Links
     let mut links: Vec<Link> = Vec::new();
-    //let classes = get_all_classes(get_packages(main.clone()));
+    let objects = get_objects(main.clone());
 
     //Links durchlaufen
     for mut child in main.children {
@@ -92,17 +92,17 @@ pub fn get_links(main: Element) -> Vec<Link> {
             for obj in child.children {
                 for (key, value) in obj.attributes {
                     if key.to_string() == "name" {
-                        //if class_exists(classes.clone(), value.to_string()) == true {
+                        if object_exists(objects.clone(), value.to_string()) == true {
                             if obj.name == "object" {
                                 n1 = value;
                             }
                             else if obj.name == "toObject" {
                                 n2 = value;
                             }
-                        /*} else {
-                            println!("Class {} doesn't exist!", value);
-                            return relationships;
-                        }*/
+                        } else {
+                            println!("Object {} doesn't exist!", value);
+                            return links;
+                        }
                     }
                     else if key.to_string() == "role" {
                         if obj.name == "object" {
@@ -155,4 +155,13 @@ fn get_attributes(elements:Vec<Element>) -> Vec<Attribute>{
         }
     }
     return attributes;
+}
+
+fn object_exists(objects: Vec<Object>, object_name: String) -> bool {
+    for object in objects {
+        if object.name == object_name || object.class == object_name {
+            return true;
+        }
+    }
+    return false;
 }
