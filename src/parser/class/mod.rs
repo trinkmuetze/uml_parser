@@ -54,7 +54,7 @@ pub struct RelationshipClass {
 //-------------------------------------------------------------------------------------------------
 //METHODS - PUBLIC
 //-------------------------------------------------------------------------------------------------
-pub fn get_packages(main: Element) -> Vec<Package>{
+pub fn get_packages(main: Element) -> Vec<Package> {
     //Vektor für alle Packages
     let mut packages: Vec<Package> = Vec::new();
 
@@ -81,7 +81,7 @@ pub fn get_packages(main: Element) -> Vec<Package>{
     return packages;
 }
 
-pub fn get_classes(elements:Vec<Element>) -> Vec<Class>{
+pub fn get_classes(elements:Vec<Element>) -> Vec<Class> {
     //Vektor für alle Klassen
     let mut classes: Vec<Class> = Vec::new();
 

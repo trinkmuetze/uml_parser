@@ -48,7 +48,9 @@ fn main() {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
-                println!("XML valid, but package diagrams not implemented.");
+                let data = parser::parse_data(filename.to_string());
+                let objects = parser::object::get_objects(data.clone());
+                let links = parser::object::get_links(data.clone());
             }
         } else {
             println!("Not a valid XML file.");
