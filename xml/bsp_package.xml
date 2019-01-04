@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml_package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../UML_Package_Schema.xsd">
+<uml_package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../xsd/UML_Package_Schema.xsd">
 	<model name="Multi-Layered-Application">
     <package name="Users" relation="access" toPackage="Presentation Layer"/>
     <package name="Presentation Layer">

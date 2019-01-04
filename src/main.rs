@@ -16,6 +16,12 @@ fn main() {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
+                let data = parser::parse_data(filename.to_string());
+                let modules = parser::package::get_models(data.clone());
+
+                if diagramVisualizer::generate_package_diagram(modules.clone(), 720, 1280, "Test") {
+                    println!("Diagram created!");
+                }
                 println!("XML valid, but package diagrams not implemented.");
             }
 
