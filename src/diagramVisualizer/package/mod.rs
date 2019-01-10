@@ -107,7 +107,7 @@ fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Rel
             draw_dashed_line(image, Point::new(to.x, to.y + 20),
                                     Point::new(to.x, to.y));
         }
-        draw_inheritance_arrow(image, to.clone(), Direction::Up);
+        draw_arrow(image, to.clone(), Direction::Up);
     }
     else if from_box.start.y < to_box.start.y {
         from = Point::new(from_box.start.x +from_box.box_width/2 + num,
@@ -120,7 +120,7 @@ fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Rel
                                 Point::new(to.x, from.y + num));
         draw_dashed_line(image, Point::new(to.x, from.y + num),
                                 Point::new(to.x, to.y));
-        draw_inheritance_arrow(image, to.clone(), Direction::Down);
+        draw_arrow(image, to.clone(), Direction::Down);
     }
     else if from_box.start.y > to_box.start.y {
         from = Point::new(from_box.start.x + from_box.box_width/2 + num,
@@ -133,7 +133,7 @@ fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Rel
                                 Point::new(to.x, from.y - num));
         draw_dashed_line(image, Point::new(to.x, from.y - num),
                                 Point::new(to.x, to.y));
-        draw_inheritance_arrow(image, to.clone(), Direction::Up);
+        draw_arrow(image, to.clone(), Direction::Up);
 
     }
 }
