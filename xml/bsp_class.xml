@@ -55,28 +55,28 @@
 
 	</package>
 
-	<relationship type="inheritance">
+	<relation type="inheritance">
 		<class name="Bird" multiplicity="1"/>
 		<toClass name="Animal" multiplicity = "3"/>
-	</relationship>
+	</relation>
 
-	<relationship type="inheritance">
+	<relation type="inheritance">
 		<class name="Cat" multiplicity="1"/>
 		<toClass name="Animal"/>
-	</relationship>
+	</relation>
 
-	<relationship type="implementation">
+	<relation type="implementation">
 		<class name="Jaguar" multiplicity="1"/>
 		<toClass name="Cat"/>
-	</relationship>
+	</relation>
 
-	<relationship type="composition">
+	<relation type="composition">
 		<class name="Cat" multiplicity="1"/>
 		<toClass name="Prey"/>
-	</relationship>
+	</relation>
 
-	<relationship type="aggregation">
+	<relation type="aggregation">
 		<class name="Dog" multiplicity="24"/>
 		<toClass name="Cat"/>
-	</relationship>
+	</relation>
 </uml_class>

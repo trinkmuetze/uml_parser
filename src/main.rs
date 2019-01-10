@@ -18,6 +18,8 @@ fn main() {
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let models = parser::package::get_models(data.clone());
+
+                println!("{:#?}", models);
             }
 
         //CLASS DIAGRAM----------------------------------------------------------------------------
@@ -34,9 +36,6 @@ fn main() {
                         println!("Diagram created!");
                     }
                 }
-
-            } else {
-                println!("XML not valid or not found.");
             }
         //OBJECT DIAGRAM----------------------------------------------------------------------------
         } else if uml_type == "uml_object" {
@@ -46,9 +45,12 @@ fn main() {
                 let data = parser::parse_data(filename.to_string());
                 let objects = parser::object::get_objects(data.clone());
                 let links = parser::object::get_links(data.clone());
+
+                println!("{:#?}", objects);
+                println!("{:#?}", links);
             }
         } else {
-            println!("Not a valid XML file.");
+            println!("XML not found or not valid.");
         }
     }
     else if args.len() < 2 {

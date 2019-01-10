@@ -88,7 +88,7 @@
 				</xs:element>
 
 				<!-- RELATIONSHIP -->
-				<xs:element name="relationship" minOccurs="0" maxOccurs="9">
+				<xs:element name="relation" minOccurs="0" maxOccurs="9">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="class">
