@@ -210,7 +210,7 @@ pub fn get_relationships(main: Element) -> Vec<Relationship> {
 
     //Beziehungen durchlaufen
     for mut child in main.children {
-        if child.name.to_string() == "relationship" {
+        if child.name.to_string() == "relation" {
             let mut t = "";
 
             //Attribute des Elements durchlaufen

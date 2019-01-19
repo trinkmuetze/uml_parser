@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <!-- TYPES -->
+  <!-- Relation Type -->
+
+  <xs:element name="uml_use_case">
+    <xs:complexType>
+			<xs:sequence>
+        <!-- SYSTEM -->
+        <xs:element name="system" minOccurs="1" maxOccurs="1">
+
+          <!-- name -->
+          <!-- use cases - mit name -->
+
+        </xs:element>
+
+        <!-- Relations -->
+        <xs:element name="relation" minOccurs="1" maxOccurs="unbound">
+
+          <!-- Typ -->
+          <!-- Element A -->
+          <!-- Element B (ob Elemente zusammenpassen (akteur aktuer (ein typ) | use case akteur (nur assoziation) | use case use case (include oder exclude)))-->
+
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
