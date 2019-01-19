@@ -42,7 +42,8 @@ pub fn get_uml_type(file_name: String) -> String {
 }
 
 fn get_file_data(file_name: String) -> String {
-    let file = File::open(file_name).unwrap();
+    let file = File::open(file_name.clone()).unwrap();
+
     let mut file = BufReader::new(file);
 
     let mut contents: Vec<u8> = Vec::new();

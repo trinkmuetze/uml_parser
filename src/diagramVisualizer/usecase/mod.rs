@@ -1,4 +1,3 @@
-
 extern crate imageproc;
 extern crate rusttype;
 extern crate image;
@@ -69,6 +68,15 @@ enum Direction{
     Up,
     Down,
     ToLeft,
+}
+
+fn draw_acteur(image: &mut RgbImage, position: Point) {
+    draw_hollow_circle_mut(image, (position.x as i32, position.y as i32), 5,Rgb([0u8, 0u8, 0u8]));
+    draw_line_segment_mut(image, (position.x as i32, position.y as i32 + 5),
+                                    (position.x as i32, position.y as i32 + 20),Rgb([0u8, 0u8, 0u8]));
+    draw_line_segment_mut(image, (position.x as i32 - 5, position.y as i32 + 10),
+                                    (position.x as i32 + 5, position.y as i32 + 10),Rgb([0u8, 0u8, 0u8]));
+
 }
 
 fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Relationship, class_boxes: Vec<PackageBox>){

@@ -126,11 +126,11 @@ pub fn generate_object_diagram (relationships: Vec<parser::object::Link>,
 }
 
 
-pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u32, width: u32, diagram_name: &str) -> bool
+pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u32, width: u32) -> bool
 {
     let mut boxes: Vec<package::PackageBox> = Vec::new();
     //Path of the diagram
-    let path = Path::new("class_diagram.png");
+    let path = Path::new("package_diagram.png");
 
     //Used RGBs
     let white = Rgb([255u8, 255u8, 255u8]);
@@ -149,7 +149,6 @@ pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u
 
     //White Background with title of the diagram
     draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
-    draw_text_mut(&mut image, black, (width/2)-(diagram_name.len() as u32*size as u32/2), 10, scale, &font, &diagram_name);
 
     let mut row = 0;
     let mut column = 0;
@@ -157,6 +156,7 @@ pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u
     let mut class_column = 0;
 
     for package in packages.clone() {
+        draw_text_mut(&mut image, black, (width/2)-(package.name.len() as u32*size as u32/2), 10, scale, &font, &package.name);
         //Generating the class box
         column = column + 1;
         if column > 3 {
@@ -170,8 +170,8 @@ pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u
                 class_column = 0;
                 class_row = class_row + 1;
             }
+            boxes.push(package::draw_package_box(&mut image, class.clone(), &mut x, &mut y, row, column));
         }
-        boxes.push(package::draw_package_box(&mut image, package.clone(), &mut x, &mut y, row, column));
     }
 
     //-----------------Relationships------------------------------------------//
