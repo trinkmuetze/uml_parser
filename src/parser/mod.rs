@@ -3,6 +3,7 @@ extern crate xmltree;
 pub mod class;
 pub mod package;
 pub mod object;
+pub mod use_case;
 //mod uml_class;
 //pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship, Package, RelationshipClass, get_packages, get_relationships};
 
@@ -20,6 +21,8 @@ pub fn validate_xml(uml_type: String, file_name: String) -> bool {
         xsd_file = "xsd/UML_Package_Schema.xsd";
     } else if uml_type == "uml_object" {
         xsd_file = "xsd/UML_Object_Schema.xsd";
+    } else if uml_type == "uml_use_case" {
+        xsd_file = "xsd/UML_Use_Case_Schema.xsd";
     }
 
     let mut command = Command::new("sh");

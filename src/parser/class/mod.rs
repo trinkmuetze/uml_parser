@@ -238,7 +238,7 @@ pub fn get_relationships(main: Element) -> Vec<Relationship> {
                                 n2 = value;
                             }
                         } else {
-                            println!("Class {} doesn't exist!", value);
+                            println!("Class \"{}\" doesn't exist!", value);
                             return relationships;
                         }
                     }
