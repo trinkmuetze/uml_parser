@@ -66,10 +66,18 @@ fn main() {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
-                println!("XML valid but not implemented.");
+                let data = parser::parse_data(filename.to_string());
+
+                let nodes = parser::deployment::get_nodes(data.children.clone());
+                let artifacts = parser::deployment::get_artifacts(data.children.clone());
+                let relations = parser::deployment::get_relations(data.clone());
+
+                println!("{:#?}", nodes);
+                println!("{:#?}", artifacts);
+                println!("{:#?}", relations);
             }
         //COMPONENT DIAGRAM-----------------------------------------------------------------------
-    } else if uml_type == "uml_component" {
+        } else if uml_type == "uml_component" {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {

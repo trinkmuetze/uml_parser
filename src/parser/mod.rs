@@ -4,6 +4,7 @@ pub mod class;
 pub mod package;
 pub mod object;
 pub mod use_case;
+pub mod deployment;
 //mod uml_class;
 //pub use self::uml_class::{Class, Attribute, Method, Parameter, Relationship, Package, RelationshipClass, get_packages, get_relationships};
 
