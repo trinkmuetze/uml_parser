@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<!-- TYPES -->
+  <!-- ARTIFACT -->
+  <xs:complexType name="artifact">
+    <xs:attribute name="artifact_type" type="xs:string" />
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <!-- NODE -->
+  <xs:complexType name="node">
+    <xs:sequence>
+      <xs:element name="node" type="node" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="artifact" type="artifact" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="node_type" type="xs:string" use="required" />
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+
+  <xs:element name="uml_deployment">
+    <xs:complexType>
+			<xs:sequence>
+        <!-- NODE -->
+        <xs:element name="node" type="node"  minOccurs="0" maxOccurs="unbounded" />
+        <!-- ARTIFACT -->
+        <xs:element name="artifact" type="artifact"  minOccurs="0" maxOccurs="unbounded" />
+
+        <xs:element name="relations"  minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <!-- NODE_NODE RELATION -->
+              <xs:element name="node_node"  minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="node" minOccurs="1" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="multiplicity" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
+
+                    <xs:element name="to_node" minOccurs="1" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="multiplicity" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+
+              <!-- ARTIFACT_NODE RELATION -->
+              <xs:element name="artifact_node" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="artifact" type="xs:string" use="required" />
+                  <xs:attribute name="to_node" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

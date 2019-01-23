@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml_deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Deployment_Schema.xsd">
+  <node node_type="device" name="Zentralprozessor">
+    <artifact name="Bildverarbeitung.exe" />
+    <artifact name="Taskprogramm" />
+    <artifact artifact_type="deployment spec" name="Bildaufbaubeschreibung.xml" />
+  </node>
+
+  <node node_type="device" name="Bildprozessor" />
+
+  <artifact name="Strahlberechnungsprogramm" />
+
+  <relations>
+    <node_node name="Bildbearbeitung">
+      <node name="Zentralprozessor" multiplicity="1" />
+      <to_node name="Bildprozessor" multiplicity="1..*" />
+    </node_node>
+
+    <artifact_node artifact="Strahlberechnungsprogramm" to_node="Bildprozessor" />
+  </relations>
+
+
+</uml_deployment>
