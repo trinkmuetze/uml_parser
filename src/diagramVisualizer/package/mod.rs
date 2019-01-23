@@ -211,6 +211,7 @@ fn create_package_box(package: parser::package::Package,mut mother_package: Vec<
     let box_width = (size as u32 -6)*(name_length as u32)+50;
     if column == 0 { *x = 50; }
     if row > 0 && column == 0 { *y = *y + 300; }
+    let veclen = package_vec.len();
 
 
     package_box = PackageBox::new(package.name, mother_package.clone(), Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
@@ -244,7 +245,9 @@ pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package,
     //Generate the box
     create_package_box(package, mother_vec, x, y, row, column, &mut package_vec);
 
-    for pack_box in package_vec {
+    for x in 0..package_vec.len() {
+        let pack = package_vec.pop();
+        let pack_box = pack.expect("unpacking failed");
         print!("{:?}\n", pack_box.name);
         draw_text_mut(image, black, pack_box.start.x + 5, pack_box.start.y + 2, scale, &font, &pack_box.name);
 
@@ -256,6 +259,7 @@ pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package,
         draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32).of_size(nametag_box_width, size as u32 + 5), black);
 
         draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32 + size as i32 +5).of_size(pack_box.box_width, pack_box.box_height), black);
+
 
         for mother in pack_box.mother_box {
             print!("{:?}'s Mother: {:?}\n",pack_box.name, mother.name);

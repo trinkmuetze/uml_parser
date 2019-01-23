@@ -57,15 +57,14 @@ fn main() {
             }
         //USE CASE DIAGRAM-------------------------------------------------------------------------
         } else if uml_type == "uml_use_case" {
-            valid = parser::validate_xml(uml_type, filename.to_string());
+            //valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let system = parser::use_case::get_system(data.clone());
                 let relations = parser::use_case::get_relations(data.clone());
 
-                println!("{:#?}", system);
-                println!("{:#?}", relations);
+                diagramVisualizer::generate_usecase_diagram(system.clone(),relations.clone(), 720, 1280);
             }
         } else {
             println!("XML not found or not valid.");

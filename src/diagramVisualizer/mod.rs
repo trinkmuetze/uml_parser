@@ -183,9 +183,8 @@ pub fn generate_package_diagram(models: Vec<parser::package::Model>, height: u32
     return true;
 }
 
-pub fn generate_usecase_diagram(/*packages: Vec<parser::usecase::System>,*/ height: u32, width: u32) -> bool
+pub fn generate_usecase_diagram(systems: Vec<parser::use_case::System>,relations: Vec<parser::use_case::Relations>, height: u32, width: u32) -> bool
 {
-    let mut cases: Vec<usecase::UseCase> = Vec::new();
     //Path of the diagram
     let path = Path::new("usecase_diagram.png");
 
@@ -194,8 +193,10 @@ pub fn generate_usecase_diagram(/*packages: Vec<parser::usecase::System>,*/ heig
     let black = Rgb([0u8, 0u8, 0u8]);
 
     //Origin of the first class
-    let mut x = 50;
-    let mut y = 70;
+    let mut x = 130;
+    let mut y = 100;
+    let mut ac_x = 50;
+    let mut ac_y = 100;
 
     let mut image:RgbImage = RgbImage::new(width, height);
     //Configuring the font
@@ -203,43 +204,102 @@ pub fn generate_usecase_diagram(/*packages: Vec<parser::usecase::System>,*/ heig
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
     let mut size = 30.0;
     let scale = Scale { x: size, y: size };
-    let mut x_ = 100 as i32;
-    let mut y_ = 100 as i32;
 
     //White Background with title of the diagram
     draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
-    usecase::draw_acteur(&mut image, usecase::Point::new(50,50));
-    usecase::draw_usecase_box(&mut image, "Do a Thing".to_string(), &mut x_, &mut y_, 1, 1);
-
 
     let mut row = 0;
     let mut column = 0;
-    let mut class_row = 0;
-    let mut class_column = 0;
 
-    /*for package in packages.clone() {
-        draw_text_mut(&mut image, black, (width/2)-(package.name.len() as u32*size as u32/2), 10, scale, &font, &package.name);
+    for system in systems.clone() {
+        let system_size = (100,100);
+        let mut cases = system.use_cases;
+        let mut acteurs = system.akteurs;
+        let mut case_vec : Vec<usecase::UseCase> = Vec::new();
+        let mut ac_vec : Vec<usecase::Acteur> = Vec::new();
+
+        let mut farthest_pos = 0;
+
+        let height_factor = cases.len() / 3;
+        draw_text_mut(&mut image, black, (width/2)-(system.name.len() as u32*size as u32/2), 10, scale, &font, &system.name);
         //Generating the class box
         column = column + 1;
         if column > 3 {
             column = 0;
             row = row + 1;
         }
-        for class in package.packages.clone()
+
+        let mut class_row = 0;
+        let mut class_column = 0;
+
+        for case in cases.clone()
         {
             class_column = class_column + 1;
             if class_column > 3 {
                 class_column = 0;
                 class_row = class_row + 1;
             }
-            boxes.push(package::draw_package_box(&mut image, class.clone(), &mut x, &mut y, row, column));
+            let cusee = usecase::draw_usecase_box(&mut image, case.name, &mut x, &mut y, class_row, class_column);
+            case_vec.push(cusee.clone());
+            if cusee.center.x > farthest_pos {farthest_pos = cusee.center.x; }
         }
-    }*/
+        for acteur in acteurs.clone()
+        {
+            let cusee = usecase::draw_acteur(&mut image, usecase::Point::new(ac_x, ac_y), &acteur.name);
+            ac_vec.push(cusee.clone());
+            ac_y = ac_y + 150;
+        }
+        draw_hollow_rect_mut(&mut image, Rect::at(100,80).of_size(farthest_pos + 100 ,100 * height_factor as u32), black);
 
-    //-----------------Relationships------------------------------------------//
-    /*for relationship in relationships.clone(){
-            draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
-    }*/
+        //-----------------Relationships------------------------------------------//
+        for relationship in relations.clone(){
+                for aa in relationship.akteur_akteur {
+                    let mut from : usecase::Acteur = usecase::Acteur::new("".to_string(),usecase::Point::new(0,0), usecase::Point::new(0,0));
+                    let mut to : usecase::Acteur = usecase::Acteur::new("".to_string(),usecase::Point::new(0,0), usecase::Point::new(0,0));
+                    for a in ac_vec.clone() {
+                        if  a.name == aa.akteur {
+                            from = a.clone();
+                        }
+                        if a.name == aa.to_akteur {
+                            to = a.clone();
+                        }
+                    }
+                    usecase::draw_acteur_acteur_association(&mut image, from, to);
+                }
+                for cc in relationship.use_case_use_case {
+                    let mut from : usecase::UseCase = usecase::UseCase::new("".to_string(),usecase::Point::new(0,0), 0, 0, 0);
+                    let mut to : usecase::UseCase = usecase::UseCase::new("".to_string(),usecase::Point::new(0,0), 0, 0, 0);
+
+                    for c in case_vec.clone() {
+                        if  c.name == cc.use_case {
+                            from = c.clone();
+                        }
+                        if c.name == cc.to_use_case {
+                            to = c.clone();
+                        }
+                    }
+                    usecase::draw_case_case_association(&mut image, from.clone(), to.clone(), cc.relation_type);
+                    print!("{:?},{:?}\n", from.name, to.name);
+
+                }
+                for ac in relationship.akteur_use_case {
+                    let mut from : usecase::Acteur = usecase::Acteur::new("".to_string(),usecase::Point::new(0,0), usecase::Point::new(0,0));
+                    let mut to : usecase::UseCase = usecase::UseCase::new("".to_string(),usecase::Point::new(0,0), 0, 0, 0);
+
+                    for a in ac_vec.clone() {
+                        if a.name == ac.akteur {
+                            from = a;
+                        }
+                    }
+                    for c in case_vec.clone() {
+                        if c.name == ac.to_use_case {
+                            to = c;
+                        }
+                    }
+                    usecase::draw_acteur_case_association(&mut image, from, to);
+                }
+        }
+    }
     image.save(path).unwrap();
     return true;
 }
