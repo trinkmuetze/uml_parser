@@ -27,23 +27,10 @@
       			<xs:sequence>
               <!-- PACKAGE -->
               <xs:element name="package" minOccurs="0" maxOccurs="10" type="package"/>
-                <!--<xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="package" minOccurs="0" maxOccurs="10">
-                      <xs:complexType>
-                          <xs:attribute name="name" type="xs:string" use="required" />
-                          <xs:attribute name="relation" type="relation" />
-                          <xs:attribute name="toPackage" type="xs:string" />
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="relation" type="relation" />
-                  <xs:attribute name="toPackage" type="xs:string" />
-                </xs:complexType>
-              </xs:element>-->
+
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required" />
+
           </xs:complexType>
         </xs:element>
       </xs:sequence>

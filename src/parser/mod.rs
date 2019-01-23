@@ -23,6 +23,10 @@ pub fn validate_xml(uml_type: String, file_name: String) -> bool {
         xsd_file = "xsd/UML_Object_Schema.xsd";
     } else if uml_type == "uml_use_case" {
         xsd_file = "xsd/UML_Use_Case_Schema.xsd";
+    } else if uml_type == "uml_deployment" {
+        xsd_file = "xsd/UML_Deployment_Schema.xsd";
+    } else if uml_type == "uml_component" {
+        xsd_file = "xsd/UML_Component_Schema.xsd";
     }
 
     let mut command = Command::new("sh");
