@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml_use_case xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../UML_Use_Case_Schema.xsd">
+  <system name="Einweihungsfeier">
+      <akteur name="Gast"/>
+      <akteur name="Gastgeber"/>
+
+      <use_case name="Tanzen"/>
+      <use_case name="Essen"/>
+      <use_case name="Trinken"/>
+
+      <use_case name="Pizzaservice anrufen"/>
+      <use_case name="Feier auflösen"/>
+      <use_case name="Gäste hinausbegleiten"/>
+  </system>
+
+  <relations>
+    <akteur_akteur akteur="Gastgeber" to_akteur="Gast" />
+
+    <akteur_use_case akteur="Gast" to_use_case="Tanzen" />
+    <akteur_use_case akteur="Gast" to_use_case="Essen" />
+    <akteur_use_case akteur="Gast" to_use_case="Trinken" />
+
+    <akteur_use_case akteur="Gastgeber" to_use_case="Pizzaservice anrufen" />
+    <akteur_use_case akteur="Gastgeber" to_use_case="Feier auflösen" />
+    <akteur_use_case akteur="Gastgeber" to_use_case="Gäste hinausbegleiten" />
+
+    <use_case_use_case relation_type="extend" use_case="Pizzaservice anrufen" to_use_case="Essen" />
+    <use_case_use_case relation_type="extend" use_case="Pizzaservice anrufen" to_use_case="Trinken" />
+    <use_case_use_case relation_type="include" use_case="Feier auflösen" to_use_case="Gäste hinausbegleiten" />
+  </relations>
+</uml_use_case>

@@ -2,25 +2,68 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <!-- TYPES -->
-  <!-- Relation Type -->
+  <xs:simpleType name="relation_types">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="include"/>
+			<xs:enumeration value="extend"/>
+		</xs:restriction>
+	</xs:simpleType>
 
   <xs:element name="uml_use_case">
     <xs:complexType>
 			<xs:sequence>
         <!-- SYSTEM -->
         <xs:element name="system" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <!-- AKTEURS -->
+              <xs:element name="akteur" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
 
-          <!-- name -->
-          <!-- use cases - mit name -->
+              <!-- USE CASES -->
+              <xs:element name="use_case" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
 
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required" />
+          </xs:complexType>
         </xs:element>
 
         <!-- Relations -->
-        <xs:element name="relation" minOccurs="1" maxOccurs="unbound">
+        <xs:element name="relations" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+      			<xs:sequence>
 
-          <!-- Typ -->
-          <!-- Element A -->
-          <!-- Element B (ob Elemente zusammenpassen (akteur aktuer (ein typ) | use case akteur (nur assoziation) | use case use case (include oder exclude)))-->
+              <xs:element name="akteur_akteur" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="akteur" type="xs:string" use="required" />
+                  <xs:attribute name="to_akteur" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="akteur_use_case" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="akteur" type="xs:string" use="required" />
+                  <xs:attribute name="to_use_case" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element name="use_case_use_case" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="relation_type" type="relation_types" use="required" />
+                  <xs:attribute name="use_case" type="xs:string" use="required" />
+                  <xs:attribute name="to_use_case" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+
+            </xs:sequence>
+          </xs:complexType>
 
         </xs:element>
       </xs:sequence>

@@ -100,7 +100,7 @@ pub fn get_links(main: Element) -> Vec<Link> {
                                 n2 = value;
                             }
                         } else {
-                            println!("Object {} doesn't exist!", value);
+                            println!("Object \"{}\" doesn't exist!", value);
                             return links;
                         }
                     }
