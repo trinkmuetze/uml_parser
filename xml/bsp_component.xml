@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml_component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="-../xsd/UML_Component_Schema.xsd">
+
+  <component name="Projekte">
+    <provided_interface name="Gesamtprojekt" />
+    <provided_interface name="Einzelprojekt" />
+
+    <required_interface name="Mitarbeiterzuordnung" />
+
+    <realization name="Projektverwaltung" />
+    <realization name="Projekt" />
+    <realization name="Projektaufgabe" />
+    <realization name="Projektkomponente" />
+    <realization name="Einzelprojekte" />
+    <realization name="Gesamtprojekte" />
+
+    <artifact name="pm.jar" />
+    <artifact name="gruenesProjekt.gif" />
+    <artifact name="gelbesProjekt.gif" />
+    <artifact name="rotesProjekt.gif" />
+  </component>
+
+</uml_component>

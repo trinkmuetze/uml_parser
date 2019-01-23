@@ -66,14 +66,14 @@ fn main() {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
-                print!("XML valid but not implemented.");
+                println!("XML valid but not implemented.");
             }
         //COMPONENT DIAGRAM-----------------------------------------------------------------------
     } else if uml_type == "uml_component" {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
-                print!("XML valid but not implemented.");
+                println!("XML valid but not implemented.");
             }
         } else {
             println!("XML not found or not valid.");
