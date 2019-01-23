@@ -1,4 +1,3 @@
-
 extern crate imageproc;
 extern crate rusttype;
 extern crate image;
@@ -40,6 +39,7 @@ impl Point{
 #[derive(Clone)]
 pub struct PackageBox{
     name: String,
+    mother_box: Vec<PackageBox>,
     start: Point,
     box_width: u32,
     box_height: u32,
@@ -49,11 +49,12 @@ pub struct PackageBox{
 }
 
 impl PackageBox{
-    fn new(name: String, start: Point, box_width: u32, box_height: u32,
+    fn new(name: String, mother_box: Vec<PackageBox>, start: Point, box_width: u32, box_height: u32,
                 row: u32, column: u32)
             -> PackageBox{
         PackageBox{
             name: name,
+            mother_box: mother_box,
             start: start,
             box_width: box_width,
             box_height: box_height,
@@ -71,9 +72,9 @@ enum Direction{
     ToLeft,
 }
 
-fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Relationship, class_boxes: Vec<PackageBox>){
-    let mut from_box: PackageBox = PackageBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
-    let mut to_box: PackageBox = PackageBox::new("".to_string(), Point::new(0,0), 0, 0, 0, 0);
+/*fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Relationship, class_boxes: Vec<PackageBox>){
+    let mut from_box: PackageBox = PackageBox::new("".to_string(), null, Point::new(0,0), 0, 0, 0, 0);
+    let mut to_box: PackageBox = PackageBox::new("".to_string(), null, Point::new(0,0), 0, 0, 0, 0);
 
     let num = rand::thread_rng().gen_range(0, 100);
 
@@ -137,7 +138,7 @@ fn draw_association_dashed(image: &mut RgbImage, association: parser::class::Rel
         draw_arrow(image, to.clone(), Direction::Up);
 
     }
-}
+}*/
 
 fn draw_dashed_line(image: &mut RgbImage, mut from: Point, to: Point){
     let counter = 0.0;
@@ -200,13 +201,37 @@ fn draw_arrow(image: &mut RgbImage, point: Point, direction: Direction){
     }
 }
 
+fn create_package_box(package: parser::package::Package,mut mother_package: Vec<PackageBox>, x: &mut i32, y: &mut i32,
+                    row: u32, column: u32, package_vec: &mut Vec<PackageBox>){
+    let name_length = package.name.len();
+    let size = 16.0;
+    let package_box: PackageBox;
+
+    let box_height = size as u32;
+    let box_width = (size as u32 -6)*(name_length as u32)+50;
+    if column == 0 { *x = 50; }
+    if row > 0 && column == 0 { *y = *y + 300; }
+
+
+    package_box = PackageBox::new(package.name, mother_package.clone(), Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
+    *x = box_width as i32 + *x + 50;
+
+    package_vec.push(package_box.clone());
+    mother_package.push(package_box.clone());
+
+    for _package in package.packages {
+        create_package_box(_package,mother_package.clone(), x,y,row,column, package_vec);
+    }
+}
+
 pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package, x: &mut i32, y: &mut i32,
-                    row: u32, column: u32) -> PackageBox
+                    row: u32, column: u32)
 {
     //Used RGBs
     let white = Rgb([255u8, 255u8, 255u8]);
     let black = Rgb([0u8, 0u8, 0u8]);
-
+    let mut package_vec: Vec<PackageBox> = Vec::new();
+    let mother_vec: Vec<PackageBox> = Vec::new();
     //Configuring the font
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
@@ -215,29 +240,27 @@ pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package,
 
     let size = 16.0;
     let scale = Scale { x: size, y: size };
-    let box_height = size as u32;
-    let mut max_characters = 0;
-    let package_box: PackageBox;
-
-    max_characters = package.name.len();
-
-    if column == 0 { *x = 50; }
-
-    if row > 0 && column == 0 { *y = *y + 300; }
-
-    draw_text_mut(image, black, *x as u32 + 5, *y as u32 + 2, scale, &font, &package.name);
 
     //Generate the box
+    create_package_box(package, mother_vec, x, y, row, column, &mut package_vec);
 
-    let nametag_box_width = (size as u32 -6)*(max_characters as u32);
-    let box_width = (size as u32 -6)*(max_characters as u32)+50;
+    for pack_box in package_vec {
+        print!("{:?}\n", pack_box.name);
+        draw_text_mut(image, black, pack_box.start.x + 5, pack_box.start.y + 2, scale, &font, &pack_box.name);
 
-    draw_hollow_rect_mut(image, Rect::at(*x,*y).of_size(nametag_box_width, size as u32 + 5), black);
+        let mut max_characters = 0;
 
-    draw_hollow_rect_mut(image, Rect::at(*x,*y + size as i32 +5).of_size(box_width, box_height), black);
+        max_characters = pack_box.name.len();
+        let nametag_box_width = (size as u32 -6)*(max_characters as u32);
 
-    package_box = PackageBox::new(package.name, Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
-    *x = box_width as i32 + *x + 50;
-    //draw_hollow_rect_mut(&mut image, Rect::at(x, y).of_size(box_width, box_height), black);
-    return package_box;
+        draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32).of_size(nametag_box_width, size as u32 + 5), black);
+
+        draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32 + size as i32 +5).of_size(pack_box.box_width, pack_box.box_height), black);
+
+        for mother in pack_box.mother_box {
+            print!("{:?}'s Mother: {:?}\n",pack_box.name, mother.name);
+        }
+        //draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32).of_size(pack_box.box_width, pack_box.box_height), black);
+    }
+    //return package_box;
 }

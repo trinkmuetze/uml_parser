@@ -49,14 +49,11 @@ fn main() {
                 let objects = parser::object::get_objects(data.clone());
                 let links = parser::object::get_links(data.clone());
 
-<<<<<<< HEAD
                 if diagramVisualizer::generate_object_diagram(links.clone(), objects.clone(), 720, 1280, "Test") {
                     println!("Diagram created!");
                 }
-=======
                 println!("{:#?}", objects);
                 println!("{:#?}", links);
->>>>>>> parser
             }
         } else {
             println!("XML not found or not valid.");

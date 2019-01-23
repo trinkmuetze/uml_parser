@@ -1,6 +1,7 @@
 pub mod class;
 pub mod package;
 pub mod object;
+pub mod usecase;
 
 extern crate imageproc;
 extern crate rusttype;
@@ -126,7 +127,7 @@ pub fn generate_object_diagram (relationships: Vec<parser::object::Link>,
 }
 
 
-pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u32, width: u32) -> bool
+pub fn generate_package_diagram(models: Vec<parser::package::Model>, height: u32, width: u32) -> bool
 {
     let mut boxes: Vec<package::PackageBox> = Vec::new();
     //Path of the diagram
@@ -155,7 +156,68 @@ pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u
     let mut class_row = 0;
     let mut class_column = 0;
 
-    for package in packages.clone() {
+    for model in models.clone() {
+        draw_text_mut(&mut image, black, (width/2)-(model.name.len() as u32*size as u32/2), 10, scale, &font, &model.name);
+        //Generating the class box
+        column = column + 1;
+        if column > 3 {
+            column = 0;
+            row = row + 1;
+        }
+        for package in model.packages.clone()
+        {
+            class_column = class_column + 1;
+            if class_column > 3 {
+                class_column = 0;
+                class_row = class_row + 1;
+            }
+            package::draw_package_box(&mut image, package.clone(), &mut x, &mut y, row, column);
+        }
+    }
+
+    //-----------------Relationships------------------------------------------//
+    /*for relationship in relationships.clone(){
+            draw_association_dashed(&mut image, relationship.clone(), boxes.clone());
+    }*/
+    image.save(path).unwrap();
+    return true;
+}
+
+pub fn generate_usecase_diagram(/*packages: Vec<parser::usecase::System>,*/ height: u32, width: u32) -> bool
+{
+    let mut cases: Vec<usecase::UseCase> = Vec::new();
+    //Path of the diagram
+    let path = Path::new("usecase_diagram.png");
+
+    //Used RGBs
+    let white = Rgb([255u8, 255u8, 255u8]);
+    let black = Rgb([0u8, 0u8, 0u8]);
+
+    //Origin of the first class
+    let mut x = 50;
+    let mut y = 70;
+
+    let mut image:RgbImage = RgbImage::new(width, height);
+    //Configuring the font
+    let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
+    let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
+    let mut size = 30.0;
+    let scale = Scale { x: size, y: size };
+    let mut x_ = 100 as i32;
+    let mut y_ = 100 as i32;
+
+    //White Background with title of the diagram
+    draw_filled_rect_mut(&mut image, Rect::at(0,0).of_size(width,height), white);
+    usecase::draw_acteur(&mut image, usecase::Point::new(50,50));
+    usecase::draw_usecase_box(&mut image, "Do a Thing".to_string(), &mut x_, &mut y_, 1, 1);
+
+
+    let mut row = 0;
+    let mut column = 0;
+    let mut class_row = 0;
+    let mut class_column = 0;
+
+    /*for package in packages.clone() {
         draw_text_mut(&mut image, black, (width/2)-(package.name.len() as u32*size as u32/2), 10, scale, &font, &package.name);
         //Generating the class box
         column = column + 1;
@@ -172,7 +234,7 @@ pub fn generate_package_diagram(packages: Vec<parser::package::Model>, height: u
             }
             boxes.push(package::draw_package_box(&mut image, class.clone(), &mut x, &mut y, row, column));
         }
-    }
+    }*/
 
     //-----------------Relationships------------------------------------------//
     /*for relationship in relationships.clone(){
