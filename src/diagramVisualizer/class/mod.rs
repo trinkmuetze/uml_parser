@@ -4,17 +4,12 @@ extern crate image;
 extern crate rand;
 
 use self::rand::Rng;
-use std::path::Path;
 use self::rusttype::{FontCollection, Scale};
 use self::image::{Rgb, RgbImage};
 use self::imageproc::rect::Rect;
 use self::imageproc::drawing::{
-    draw_cross_mut,
     draw_line_segment_mut,
     draw_hollow_rect_mut,
-    draw_filled_rect_mut,
-    draw_hollow_circle_mut,
-    draw_filled_circle_mut,
     draw_text_mut,
 };
 use std::clone::Clone;
@@ -87,10 +82,8 @@ pub fn draw_association(image: &mut RgbImage, association: parser::class::Relati
         if class_box.name == association.to_class.name{ to_box = class_box.clone(); }
     }
 
-    let mut from = Point::new(from_box.start.x +from_box.box_width/2,
-                                from_box.start.y);
-    let mut to = Point::new(to_box.start.x + to_box.box_width/2,
-                                to_box.start.y + to_box.box_height);
+    let from;
+    let to;
 
     if from_box.start.y == to_box.start.y {
         from = Point::new(from_box.start.x + from_box.box_width/2,
@@ -183,10 +176,8 @@ pub fn draw_association_dashed(image: &mut RgbImage, association: parser::class:
         if class_box.name == association.class.name { from_box = class_box.clone(); }
         if class_box.name == association.to_class.name { to_box = class_box.clone(); }
     }
-    let mut from = Point::new(from_box.start.x +from_box.box_width/2,
-                                from_box.start.y);
-    let mut to = Point::new(to_box.start.x + to_box.box_width/2,
-                                to_box.start.y + to_box.box_height);
+    let from;
+    let to;
 
     if from_box.start.y == to_box.start.y {
         from = Point::new(from_box.start.x +from_box.box_width/2 + num,
@@ -242,7 +233,6 @@ pub fn draw_association_dashed(image: &mut RgbImage, association: parser::class:
 }
 
 fn draw_dashed_line(image: &mut RgbImage, mut from: Point, to: Point){
-    let counter = 0.0;
     let mut to_right = false;let mut to_left = false; let mut up = false;let mut down = false;
     if from.x < to.x { to_right = true; }
     else if from.x > to.x { to_left = true; }
@@ -294,10 +284,16 @@ fn draw_arrow(image: &mut RgbImage, point: Point, direction: Direction){
                                     (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
                                 },
         Direction::ToLeft => {
-
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
         },
         Direction::ToRight =>{
-
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
         },
     }
 }
@@ -400,11 +396,10 @@ fn draw_composition_arrow(image: &mut RgbImage, point: Point, direction: Directi
     }
 }
 
-pub fn drawclass_box(image: &mut RgbImage, class: parser::class::Class, x: &mut i32, y: &mut i32, width: u32, height: u32,
+pub fn drawclass_box(image: &mut RgbImage, class: parser::class::Class, x: &mut i32, y: &mut i32,
                     row: u32, column: u32) -> ClassBox
 {
     //Used RGBs
-    let white = Rgb([255u8, 255u8, 255u8]);
     let black = Rgb([0u8, 0u8, 0u8]);
 
     //Configuring the font
@@ -419,7 +414,7 @@ pub fn drawclass_box(image: &mut RgbImage, class: parser::class::Class, x: &mut 
     let size = 16.0;
     let scale = Scale { x: size, y: size };
     let box_height = (attribute_len + method_len + 3) as u32 * size as u32;
-    let mut text_position_y = 0;
+    let mut text_position_y;
     let mut max_characters = 0;
     let class_box: ClassBox;
 

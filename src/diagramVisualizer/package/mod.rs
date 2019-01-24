@@ -3,18 +3,12 @@ extern crate rusttype;
 extern crate image;
 extern crate rand;
 
-use self::rand::Rng;
-use std::path::Path;
 use self::rusttype::{FontCollection, Scale};
 use self::image::{Rgb, RgbImage};
 use self::imageproc::rect::Rect;
 use self::imageproc::drawing::{
-    draw_cross_mut,
-    draw_line_segment_mut,
+    //draw_line_segment_mut,
     draw_hollow_rect_mut,
-    draw_filled_rect_mut,
-    draw_hollow_circle_mut,
-    draw_filled_circle_mut,
     draw_text_mut,
 };
 use std::clone::Clone;
@@ -62,6 +56,15 @@ impl PackageBox{
             column: column,
             associations: 0,
         }
+    }
+    fn set_start(&mut self, start: Point) {
+        self.start = start;
+    }
+    fn set_box_width(&mut self, box_width: u32) {
+        self.box_width = box_width;
+    }
+    fn set_box_height(&mut self, box_height: u32) {
+        self.box_height = box_height;
     }
 }
 
@@ -140,8 +143,7 @@ enum Direction{
     }
 }*/
 
-fn draw_dashed_line(image: &mut RgbImage, mut from: Point, to: Point){
-    let counter = 0.0;
+/*fn draw_dashed_line(image: &mut RgbImage, mut from: Point, to: Point){
     let mut to_right = false;let mut to_left = false; let mut up = false;let mut down = false;
     if from.x < to.x { to_right = true; }
     else if from.x > to.x { to_left = true; }
@@ -193,13 +195,19 @@ fn draw_arrow(image: &mut RgbImage, point: Point, direction: Direction){
                                     (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
                                 },
         Direction::ToLeft => {
-
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
         },
         Direction::ToRight =>{
-
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
         },
     }
-}
+}*/
 
 fn create_package_box(package: parser::package::Package,mut mother_package: Vec<PackageBox>, x: &mut i32, y: &mut i32,
                     row: u32, column: u32, package_vec: &mut Vec<PackageBox>){
@@ -209,27 +217,27 @@ fn create_package_box(package: parser::package::Package,mut mother_package: Vec<
 
     let box_height = size as u32;
     let box_width = (size as u32 -6)*(name_length as u32)+50;
-    if column == 0 { *x = 50; }
+    /*if column == 0 { *x = 50; }
     if row > 0 && column == 0 { *y = *y + 300; }
-    let veclen = package_vec.len();
+    let veclen = package_vec.len();*/
 
 
     package_box = PackageBox::new(package.name, mother_package.clone(), Point::new(*x as u32,*y as u32), box_width, box_height, row, column);
-    *x = box_width as i32 + *x + 50;
 
     package_vec.push(package_box.clone());
-    mother_package.push(package_box.clone());
+    mother_package.insert(0, package_box);
 
     for _package in package.packages {
         create_package_box(_package,mother_package.clone(), x,y,row,column, package_vec);
     }
+
+    *x = *x + box_width as i32 + 50;
 }
 
 pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package, x: &mut i32, y: &mut i32,
                     row: u32, column: u32)
 {
     //Used RGBs
-    let white = Rgb([255u8, 255u8, 255u8]);
     let black = Rgb([0u8, 0u8, 0u8]);
     let mut package_vec: Vec<PackageBox> = Vec::new();
     let mother_vec: Vec<PackageBox> = Vec::new();
@@ -237,21 +245,19 @@ pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package,
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
 
-    let mut counter = 1;
-
     let size = 16.0;
     let scale = Scale { x: size, y: size };
 
     //Generate the box
     create_package_box(package, mother_vec, x, y, row, column, &mut package_vec);
 
-    for x in 0..package_vec.len() {
+    for _x in 0..package_vec.len() {
         let pack = package_vec.pop();
         let pack_box = pack.expect("unpacking failed");
         print!("{:?}\n", pack_box.name);
         draw_text_mut(image, black, pack_box.start.x + 5, pack_box.start.y + 2, scale, &font, &pack_box.name);
 
-        let mut max_characters = 0;
+        let mut max_characters;
 
         max_characters = pack_box.name.len();
         let nametag_box_width = (size as u32 -6)*(max_characters as u32);
@@ -261,7 +267,20 @@ pub fn draw_package_box(image: &mut RgbImage, package: parser::package::Package,
         draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32 + size as i32 +5).of_size(pack_box.box_width, pack_box.box_height), black);
 
 
-        for mother in pack_box.mother_box {
+        for mut mother in pack_box.mother_box.clone() {
+            let mut max_characters;
+
+            max_characters = mother.name.len();
+            let nametag_box_width = (size as u32 -6)*(max_characters as u32);
+            let mother_boxwidth = mother.box_width *2;
+            let mother_boxheight = mother.box_height *2;
+
+            mother.set_box_width(mother_boxwidth);
+            mother.set_box_height(mother_boxheight);
+
+            draw_hollow_rect_mut(image, Rect::at(mother.start.x as i32,mother.start.y as i32).of_size(nametag_box_width, size as u32 + 5), black);
+
+            draw_hollow_rect_mut(image, Rect::at(mother.start.x as i32,mother.start.y as i32 + size as i32 +5).of_size(mother.box_width, mother.box_height), black);
             print!("{:?}'s Mother: {:?}\n",pack_box.name, mother.name);
         }
         //draw_hollow_rect_mut(image, Rect::at(pack_box.start.x as i32,pack_box.start.y as i32).of_size(pack_box.box_width, pack_box.box_height), black);

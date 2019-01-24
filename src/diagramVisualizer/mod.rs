@@ -8,18 +8,13 @@ extern crate rusttype;
 extern crate image;
 extern crate rand;
 
-use self::rand::Rng;
 use std::path::Path;
 use self::rusttype::{FontCollection, Scale};
 use self::image::{Rgb, RgbImage};
 use self::imageproc::rect::Rect;
 use self::imageproc::drawing::{
-    draw_cross_mut,
-    draw_line_segment_mut,
     draw_hollow_rect_mut,
     draw_filled_rect_mut,
-    draw_hollow_circle_mut,
-    draw_filled_circle_mut,
     draw_text_mut,
 };
 use std::clone::Clone;
@@ -45,7 +40,7 @@ pub fn generate_class_diagram(relationships: Vec<parser::class::Relationship>,
     //Configuring the font
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
-    let mut size = 30.0;
+    let size = 30.0;
     let scale = Scale { x: size, y: size };
 
     //White Background with title of the diagram
@@ -62,7 +57,7 @@ pub fn generate_class_diagram(relationships: Vec<parser::class::Relationship>,
             column = 0;
             row = row + 1;
         }
-        boxes.push(class::drawclass_box(&mut image, class.clone(), &mut x, &mut y, width.clone(), height.clone(), row, column));
+        boxes.push(class::drawclass_box(&mut image, class.clone(), &mut x, &mut y, row, column));
     }
 
     //-----------------Relationships------------------------------------------//
@@ -97,7 +92,7 @@ pub fn generate_object_diagram (relationships: Vec<parser::object::Link>,
     //Configuring the font
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
-    let mut size = 30.0;
+    let size = 30.0;
     let scale = Scale { x: size, y: size };
 
     //White Background with title of the diagram
@@ -114,7 +109,7 @@ pub fn generate_object_diagram (relationships: Vec<parser::object::Link>,
             column = 0;
             row = row + 1;
         }
-        boxes.push(object::draw_object_box(&mut image, object.clone(), &mut x, &mut y, width.clone(), height.clone(), row, column));
+        boxes.push(object::draw_object_box(&mut image, object.clone(), &mut x, &mut y, row, column));
     }
 
     //-----------------Relationships------------------------------------------//
@@ -129,7 +124,7 @@ pub fn generate_object_diagram (relationships: Vec<parser::object::Link>,
 
 pub fn generate_package_diagram(models: Vec<parser::package::Model>, height: u32, width: u32) -> bool
 {
-    let mut boxes: Vec<package::PackageBox> = Vec::new();
+    //let mut boxes: Vec<package::PackageBox> = Vec::new();
     //Path of the diagram
     let path = Path::new("package_diagram.png");
 
@@ -145,7 +140,7 @@ pub fn generate_package_diagram(models: Vec<parser::package::Model>, height: u32
     //Configuring the font
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
-    let mut size = 30.0;
+    let size = 30.0;
     let scale = Scale { x: size, y: size };
 
     //White Background with title of the diagram
@@ -171,7 +166,7 @@ pub fn generate_package_diagram(models: Vec<parser::package::Model>, height: u32
                 class_column = 0;
                 class_row = class_row + 1;
             }
-            package::draw_package_box(&mut image, package.clone(), &mut x, &mut y, row, column);
+            package::draw_package_box(&mut image, package.clone(), &mut x, &mut y, class_row, class_column);
         }
     }
 
@@ -195,14 +190,14 @@ pub fn generate_usecase_diagram(systems: Vec<parser::use_case::System>,relations
     //Origin of the first class
     let mut x = 130;
     let mut y = 100;
-    let mut ac_x = 50;
+    let ac_x = 50;
     let mut ac_y = 100;
 
     let mut image:RgbImage = RgbImage::new(width, height);
     //Configuring the font
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
     let font = FontCollection::from_bytes(font_data).unwrap().into_font().unwrap();
-    let mut size = 30.0;
+    let size = 30.0;
     let scale = Scale { x: size, y: size };
 
     //White Background with title of the diagram
@@ -212,7 +207,6 @@ pub fn generate_usecase_diagram(systems: Vec<parser::use_case::System>,relations
     let mut column = 0;
 
     for system in systems.clone() {
-        let system_size = (100,100);
         let mut cases = system.use_cases;
         let mut acteurs = system.akteurs;
         let mut case_vec : Vec<usecase::UseCase> = Vec::new();
@@ -220,7 +214,7 @@ pub fn generate_usecase_diagram(systems: Vec<parser::use_case::System>,relations
 
         let mut farthest_pos = 0;
 
-        let height_factor = cases.len() / 3;
+        let height_factor = cases.len() / 3 + 1;
         draw_text_mut(&mut image, black, (width/2)-(system.name.len() as u32*size as u32/2), 10, scale, &font, &system.name);
         //Generating the class box
         column = column + 1;
@@ -279,8 +273,6 @@ pub fn generate_usecase_diagram(systems: Vec<parser::use_case::System>,relations
                         }
                     }
                     usecase::draw_case_case_association(&mut image, from.clone(), to.clone(), cc.relation_type);
-                    print!("{:?},{:?}\n", from.name, to.name);
-
                 }
                 for ac in relationship.akteur_use_case {
                     let mut from : usecase::Acteur = usecase::Acteur::new("".to_string(),usecase::Point::new(0,0), usecase::Point::new(0,0));

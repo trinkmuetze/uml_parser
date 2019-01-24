@@ -4,21 +4,15 @@ extern crate image;
 extern crate rand;
 
 use self::rand::Rng;
-use std::path::Path;
 use self::rusttype::{FontCollection, Scale};
 use self::image::{Rgb, RgbImage};
 use self::imageproc::rect::Rect;
 use self::imageproc::drawing::{
-    draw_cross_mut,
     draw_line_segment_mut,
     draw_hollow_rect_mut,
-    draw_filled_rect_mut,
-    draw_hollow_circle_mut,
-    draw_filled_circle_mut,
     draw_text_mut,
 };
 use std::clone::Clone;
-use std::ops::Add;
 
 use super::parser;
 
@@ -71,6 +65,35 @@ enum Direction{
     ToLeft,
 }
 
+fn draw_arrow(image: &mut RgbImage, point: Point, direction: Direction){
+    match direction {
+        Direction::Up => {
+        draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                (point.x as f32 - 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
+        draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                (point.x as f32 + 10.0, point.y as f32 + 15.0), Rgb([0u8, 0u8, 0u8]));
+                            },
+        Direction::Down => {
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 10.0, point.y as f32 - 15.0), Rgb([0u8, 0u8, 0u8]));
+                                },
+        Direction::ToLeft => {
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 + 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
+        },
+        Direction::ToRight =>{
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 + 10.0), Rgb([0u8, 0u8, 0u8]));
+            draw_line_segment_mut(image, (point.x as f32, point.y as f32),
+                                    (point.x as f32 - 15.0, point.y as f32 - 10.0), Rgb([0u8, 0u8, 0u8]));
+        },
+    }
+}
+
 pub fn draw_association(image: &mut RgbImage, association: parser::object::Link, object_boxes: Vec<ObjectBox>)
 {
     let font_data = Vec::from(include_bytes!("DejaVuSans.ttf") as &[u8]);
@@ -88,10 +111,8 @@ pub fn draw_association(image: &mut RgbImage, association: parser::object::Link,
         if object_box.name == association.to_object.name{ to_box = object_box.clone(); }
     }
 
-    let mut from = Point::new(from_box.start.x +from_box.box_width/2,
-                                from_box.start.y + from_box.box_height);
-    let mut to = Point::new(to_box.start.x + to_box.box_width/2,
-                                to_box.start.y + to_box.box_height);
+    let from;
+    let to;
 
     if from_box.start.y == to_box.start.y {
         from = Point::new(from_box.start.x + from_box.box_width/2 + num,
@@ -106,7 +127,7 @@ pub fn draw_association(image: &mut RgbImage, association: parser::object::Link,
                                     (from.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (from.x as f32, from.y as f32 + 20.0),
                                     (to.x as f32, from.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
-            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + (from.x/2), from.y + 25, scale, &font, &association.name.to_string());
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 100, from.y + 25, scale, &font, &association.name.to_string());
             draw_line_segment_mut(image, (to.x as f32, from.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
             draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_object.role.to_string());
@@ -119,7 +140,9 @@ pub fn draw_association(image: &mut RgbImage, association: parser::object::Link,
                                     (from.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
             draw_line_segment_mut(image, (from.x as f32, to.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32 + 20.0), Rgb([0u8, 0u8, 0u8]));
-            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + (from.x/2), to.y + 25, scale, &font, &association.name.to_string());
+            draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), from.x + 100, to.y + 25, scale, &font, &association.name.to_string());
+            if from.x > to.x { draw_arrow(image, Point::new(from.x + 80, to.y + 25), Direction::ToLeft );}
+            else { draw_arrow(image, Point::new(from.x + 80, to.y + 25), Direction::ToRight );}
             draw_line_segment_mut(image, (to.x as f32, to.y as f32 + 20.0),
                                     (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
             draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_object.role.to_string());
@@ -136,7 +159,7 @@ pub fn draw_association(image: &mut RgbImage, association: parser::object::Link,
                                 (from.x as f32, from.y as f32 + num as f32), Rgb([0u8, 0u8, 0u8]));
         draw_line_segment_mut(image, (from.x as f32, from.y as f32 + num as f32),
                                 (to.x as f32, from.y as f32 + num as f32), Rgb([0u8, 0u8, 0u8]));
-        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + (from.x/2), from.y + 25, scale, &font, &association.name.to_string());
+        draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 20, from.y + 100, scale, &font, &association.name.to_string());
         draw_line_segment_mut(image, (to.x as f32, from.y as f32 + num as f32),
                                 (to.x as f32, to.y as f32), Rgb([0u8, 0u8, 0u8]));
         draw_text_mut(image, Rgb([0u8, 0u8, 0u8]), to.x + 5, to.y + 5, scale, &font, &association.to_object.role.to_string());
@@ -160,11 +183,10 @@ pub fn draw_association(image: &mut RgbImage, association: parser::object::Link,
     }
 }
 
-pub fn draw_object_box(image: &mut RgbImage, mut object: parser::object::Object, x: &mut i32, y: &mut i32, width: u32, height: u32,
+pub fn draw_object_box(image: &mut RgbImage, mut object: parser::object::Object, x: &mut i32, y: &mut i32,
                     row: u32, column: u32) -> ObjectBox
 {
     //Used RGBs
-    let white = Rgb([255u8, 255u8, 255u8]);
     let black = Rgb([0u8, 0u8, 0u8]);
 
     //Configuring the font
@@ -178,7 +200,7 @@ pub fn draw_object_box(image: &mut RgbImage, mut object: parser::object::Object,
     let size = 16.0;
     let scale = Scale { x: size, y: size };
     let box_height = (attribute_len + 3) as u32 * size as u32;
-    let mut text_position_y = 0;
+    let mut text_position_y;
     let mut max_characters = 0;
     let class_box: ObjectBox;
 
@@ -218,7 +240,6 @@ pub fn draw_object_box(image: &mut RgbImage, mut object: parser::object::Object,
         draw_text_mut(image, black, *x as u32 + 5, text_position_y, scale, &font, &attribute_line);
         counter = counter +1;
     }
-    counter = counter +1;
 
     //Generate the box
     let box_width = (size as u32 -6)*(max_characters as u32);
