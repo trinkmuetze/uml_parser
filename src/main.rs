@@ -9,22 +9,25 @@ fn main() {
 
     if args.len() == 2  {
         let filename = &args[1];
+        println!("{:?}", filename);
         let uml_type = parser::get_uml_type(filename.clone());
 
         //PACKAGE DIAGRAM--------------------------------------------------------------------------
         if uml_type == "uml_package" {
-            valid = parser::validate_xml(uml_type, filename.to_string());
+            //valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
-                let models = parser::package::get_models(data.clone());
+                let modules = parser::package::get_models(data.clone());
 
-                println!("{:#?}", models);
+                if diagramVisualizer::generate_package_diagram(modules.clone(), 720, 1280) {
+                    println!("Diagram created!");
+                }
             }
 
         //CLASS DIAGRAM----------------------------------------------------------------------------
         } else if uml_type == "uml_class" {
-            valid = parser::validate_xml(uml_type, filename.to_string());
+            //valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
@@ -39,27 +42,29 @@ fn main() {
             }
         //OBJECT DIAGRAM---------------------------------------------------------------------------
         } else if uml_type == "uml_object" {
-            valid = parser::validate_xml(uml_type, filename.to_string());
+            //valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let objects = parser::object::get_objects(data.clone());
                 let links = parser::object::get_links(data.clone());
 
+                if diagramVisualizer::generate_object_diagram(links.clone(), objects.clone(), 720, 1280, "Test") {
+                    println!("Diagram created!");
+                }
                 println!("{:#?}", objects);
                 println!("{:#?}", links);
             }
         //USE CASE DIAGRAM-------------------------------------------------------------------------
         } else if uml_type == "uml_use_case" {
-            valid = parser::validate_xml(uml_type, filename.to_string());
+            //valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let system = parser::use_case::get_system(data.clone());
                 let relations = parser::use_case::get_relations(data.clone());
 
-                println!("{:#?}", system);
-                println!("{:#?}", relations);
+                diagramVisualizer::generate_usecase_diagram(system.clone(),relations.clone(), 720, 1280);
             }
         //DEPLOYMENT DIAGRAM-----------------------------------------------------------------------
         } else if uml_type == "uml_deployment" {
@@ -90,8 +95,4 @@ fn main() {
     else if args.len() < 2 {
         println!("Too few parameters.");
     }
-    else if args.len() > 2 {
-        println!("Too much parameters.");
-    }
-
 }
