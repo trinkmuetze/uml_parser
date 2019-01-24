@@ -5,16 +5,15 @@ pub mod parser;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut valid = true;
+    let mut valid = false;
 
     if args.len() == 2  {
         let filename = &args[1];
-        println!("{:?}", filename);
         let uml_type = parser::get_uml_type(filename.clone());
 
         //PACKAGE DIAGRAM--------------------------------------------------------------------------
         if uml_type == "uml_package" {
-            //valid = parser::validate_xml(uml_type, filename.to_string());
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
@@ -27,7 +26,7 @@ fn main() {
 
         //CLASS DIAGRAM----------------------------------------------------------------------------
         } else if uml_type == "uml_class" {
-            //valid = parser::validate_xml(uml_type, filename.to_string());
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
@@ -35,36 +34,36 @@ fn main() {
                 let relationships = parser::class::get_relationships(data.clone());
 
                 for package in packages {
-                    if diagramVisualizer::generate_class_diagram(relationships.clone(), package.classes, 720, 1280, "Test") {
+                    if diagramVisualizer::generate_class_diagram(relationships.clone(), package.classes, 720, 1280, "Klassen Diagramm") {
                         println!("Diagram created!");
                     }
                 }
             }
         //OBJECT DIAGRAM---------------------------------------------------------------------------
         } else if uml_type == "uml_object" {
-            //valid = parser::validate_xml(uml_type, filename.to_string());
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let objects = parser::object::get_objects(data.clone());
                 let links = parser::object::get_links(data.clone());
 
-                if diagramVisualizer::generate_object_diagram(links.clone(), objects.clone(), 720, 1280, "Test") {
+                if diagramVisualizer::generate_object_diagram(links.clone(), objects.clone(), 720, 1280, "Objekt Diagramm") {
                     println!("Diagram created!");
                 }
-                println!("{:#?}", objects);
-                println!("{:#?}", links);
             }
         //USE CASE DIAGRAM-------------------------------------------------------------------------
         } else if uml_type == "uml_use_case" {
-            //valid = parser::validate_xml(uml_type, filename.to_string());
+            valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
                 let data = parser::parse_data(filename.to_string());
                 let system = parser::use_case::get_system(data.clone());
                 let relations = parser::use_case::get_relations(data.clone());
 
-                diagramVisualizer::generate_usecase_diagram(system.clone(),relations.clone(), 720, 1280);
+                if diagramVisualizer::generate_usecase_diagram(system.clone(),relations.clone(), 720, 1280) {
+                    println!("Diagram created!");
+                }
             }
         //DEPLOYMENT DIAGRAM-----------------------------------------------------------------------
         } else if uml_type == "uml_deployment" {
@@ -86,7 +85,11 @@ fn main() {
             valid = parser::validate_xml(uml_type, filename.to_string());
 
             if valid {
-                println!("XML valid but not implemented.");
+                let data = parser::parse_data(filename.to_string());
+
+                let components = parser::component::get_components(data.clone());
+
+                println!("{:#?}", components);
             }
         } else {
             println!("XML not found or not valid.");

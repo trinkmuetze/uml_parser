@@ -1,16 +1,16 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <uml_use_case xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../UML_Use_Case_Schema.xsd">
   <system name="Einweihungsfeier">
-      <akteur name="Gast"/>
-      <akteur name="Gastgeber"/>
+    <akteur name="Gast"/>
+    <akteur name="Gastgeber"/>
 
-      <use_case name="Tanzen"/>
-      <use_case name="Essen"/>
-      <use_case name="Trinken"/>
+    <use_case name="Tanzen"/>
+    <use_case name="Essen"/>
+    <use_case name="Trinken"/>
 
-      <use_case name="Pizzaservice anrufen"/>
-      <use_case name="Feier auflösen"/>
-      <use_case name="Gäste hinausbegleiten"/>
+    <use_case name="Pizzaservice anrufen"/>
+    <use_case name="Feier auflösen"/>
+    <use_case name="Gäste hinausbegleiten"/>
   </system>
 
   <relations>

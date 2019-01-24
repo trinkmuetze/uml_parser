@@ -4,7 +4,7 @@
     <package name="Users" relation="access" toPackage="Presentation Layer"/>
     <package name="Presentation Layer">
       <package name="User Interface">
-	<package name="PUPSI"/>
+				<package name="PUPSI"/>
       </package>
       <package name="Presentation Logic"/>
     </package>
